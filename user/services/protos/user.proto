@@ -1,0 +1,74 @@
+syntax = "proto2";
+package services;
+option go_package = "../;protos";
+
+message DouyinUserRegisterRequest {
+  // @gotags: json:"username"
+  required string Username = 1; //注册用户名，最长32个字符
+  // @gotags: json:"password"
+  required string Password = 2; //密码，最长32个字符
+}
+
+message DouyinUserRegisterResponse {
+  // @gotags: json:"status_code"
+  required int32 StatusCode = 1; //状态码 0-成功 其他值-失败
+  // @gotags: json:"status_msg"
+  optional string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user_id"
+  required int64 UserId = 3; //用户id
+  // @gotags: json:"token"
+  required string Token = 4; //用户鉴权token
+}
+
+message DouyinUserLoginRequest {
+  // @gotags: json:"username"
+  required string Username = 1; //注册用户名，最长32个字符
+  // @gotags: json:"password"
+  required string Password = 2; //密码，最长32个字符
+}
+
+message DouyinUserLoginResponse {
+  // @gotags: json:"status_code"
+  required int32 StatusCode = 1; //状态码 0-成功 其他值-失败
+  // @gotags: json:"status_msg"
+  optional string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user_id"
+  required int64 UserId = 3; //用户id
+  // @gotags: json:"token"
+  required string Token = 4; //用户鉴权token
+}
+
+message User {
+  // @gotagss: json:"id"
+  required int64 Id = 1; //用户id
+  // @gotagss: json:"name"
+  required string Name = 2; //用户名称
+  // @gotagss: json:"follow_count"
+  optional int64 FollowCount = 3; //关注总数
+  // @gotagss: json:"follower_count"
+  optional int64 FollowerCount = 4; //粉丝总数
+  // @gotagss: json:"is_follow"
+  required bool IsFollow = 5; //true-已关注，false-未关注
+}
+
+message DouyinUserRequest {
+  // @gotagss: json:"user_id"
+  required int64 UserId = 1; //用户id
+  // @gotagss: json:"token"
+  required string Token = 2; //用户鉴权token
+}
+
+message DouyinUserResponse {
+  // @gotags: json:"status_code"
+  required int32 StatusCode = 1; //状态码 0-成功，其他值-失败
+  // @gotags: json:"status_msg"
+  optional string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user"
+  required User User = 3; //用户信息
+}
+
+service UserService{
+  rpc Login(DouyinUserLoginRequest) returns (DouyinUserLoginResponse);
+  rpc Register(DouyinUserRegisterRequest) returns(DouyinUserRegisterResponse);
+  rpc UserInfo(DouyinUserRequest) returns(DouyinUserResponse);
+}
