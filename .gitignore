@@ -14,4 +14,6 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 user/go.sum
+api-gateway/go.sum
+runtime/logs/log20230131.log
 .idea

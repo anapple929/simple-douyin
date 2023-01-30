@@ -1,0 +1,74 @@
+syntax = "proto3";
+package services;
+option go_package = "../;proto";
+
+message DouyinUserRegisterRequest {
+  // @gotags: json:"username"
+  string Username = 1; //注册用户名，最长32个字符
+  // @gotags: json:"password"
+  string Password = 2; //密码，最长32个字符
+}
+
+message DouyinUserRegisterResponse {
+  // @gotags: json:"status_code"
+  int32 StatusCode = 1; //状态码 0-成功 其他值-失败
+  // @gotags: json:"status_msg"
+  string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user_id"
+  int64 UserId = 3; //用户id
+  // @gotags: json:"token"
+  string Token = 4; //用户鉴权token
+}
+
+message DouyinUserLoginRequest {
+  // @gotags: json:"username"
+  string Username = 1; //注册用户名，最长32个字符
+  // @gotags: json:"password"
+  string Password = 2; //密码，最长32个字符
+}
+
+message DouyinUserLoginResponse {
+  // @gotags: json:"status_code"
+  int32 StatusCode = 1; //状态码 0-成功 其他值-失败
+  // @gotags: json:"status_msg"
+  string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user_id"
+  int64 UserId = 3; //用户id
+  // @gotags: json:"token"
+  string Token = 4; //用户鉴权token
+}
+
+message User {
+  // @gotags: json:"id"
+  int64 Id = 1; //用户id
+  // @gotags: json:"name"
+  string Name = 2; //用户名称
+  // @gotags: json:"follow_count"
+  int64 FollowCount = 3; //关注总数
+  // @gotags: json:"follower_count"
+  int64 FollowerCount = 4; //粉丝总数
+  // @gotags: json:"is_follow"
+  bool IsFollow = 5; //true-已关注，false-未关注
+}
+
+message DouyinUserRequest {
+  // @gotags: json:"user_id"
+  int64 UserId = 1; //用户id
+  // @gotags: json:"token"
+  string Token = 2; //用户鉴权token
+}
+
+message DouyinUserResponse {
+  // @gotags: json:"status_code"
+  int32 StatusCode = 1; //状态码 0-成功，其他值-失败
+  // @gotags: json:"status_msg"
+  string StatusMsg = 2; //返回状态描述
+  // @gotags: json:"user"
+  User User = 3; //用户信息
+}
+
+service UserService{
+  rpc Login(DouyinUserLoginRequest) returns (DouyinUserLoginResponse);
+  rpc Register(DouyinUserRegisterRequest) returns(DouyinUserRegisterResponse);
+  rpc UserInfo(DouyinUserRequest) returns(DouyinUserResponse);
+}
