@@ -16,20 +16,15 @@ func Register(ginCtx *gin.Context) {
 	//PanicIfUserError(ginCtx.Bind(&userReq))
 	userReq.Username = ginCtx.Query("username")
 	userReq.Password = ginCtx.Query("password")
-	if userReq.Username == "" || userReq.Password == "" {
-		ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
-			StatusCode: -1,
-			StatusMsg:  "用户名或密码不能为空",
-			UserId:     -1,
-			Token:      "",
-		})
-		return
-	}
+
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
 	userResp, _ := userService.Register(context.Background(), &userReq)
 	//PanicIfUserError(err)
-	token, _ := utils.GenerateToken(userResp.UserId)
+	var token string
+	if userResp.UserId > 0 {
+		token, _ = utils.GenerateToken(userResp.UserId)
+	}
 
 	ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
 		StatusCode: userResp.StatusCode,
@@ -45,20 +40,15 @@ func Login(ginCtx *gin.Context) {
 	//PanicIfUserError(ginCtx.Bind(&userReq))
 	userReq.Username = ginCtx.Query("username")
 	userReq.Password = ginCtx.Query("password")
-	if userReq.Username == "" || userReq.Password == "" {
-		ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
-			StatusCode: -1,
-			StatusMsg:  "用户名或密码不能为空",
-			UserId:     -1,
-			Token:      "",
-		})
-		return
-	}
+
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
 	userResp, _ := userService.Login(context.Background(), &userReq)
 	//PanicIfUserError(err)
-	token, _ := utils.GenerateToken(userResp.UserId)
+	var token string
+	if userResp.UserId > 0 {
+		token, _ = utils.GenerateToken(userResp.UserId)
+	}
 
 	fmt.Println("登录的token是:" + token)
 	ginCtx.JSON(http.StatusOK, services.DouyinUserLoginResponse{
@@ -80,13 +70,13 @@ func UserInfo(ginCtx *gin.Context) {
 	// 从gin.Key中取出服务实例
 	//claim, _ := utils.ParseToken(ginCtx.GetHeader("Authorization"))
 	claim, err := utils.ParseToken(userReq.Token)
-	PanicIfUserError(err)
+	//PanicIfUserError(err)
 
 	currentUserId := strconv.FormatInt(claim.Id, 10)
 	userReq.Token = currentUserId
 	userService := ginCtx.Keys["userService"].(services.UserService)
 	userResp, err := userService.UserInfo(context.Background(), &userReq)
-	PanicIfUserError(err)
+	//PanicIfUserError(err)
 
 	ginCtx.JSON(http.StatusOK, services.DouyinUserResponse{
 		StatusCode: userResp.StatusCode,

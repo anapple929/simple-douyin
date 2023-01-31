@@ -16,6 +16,14 @@ import (
 func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequest, resp *services.DouyinUserLoginResponse) error {
 	username := req.Username
 	password := req.Password
+	if username == "" || password == "" {
+		resp.StatusCode = -1
+		resp.StatusMsg = "用户名或密码不能为空"
+		resp.UserId = -1
+		resp.Token = ""
+		return nil
+	}
+
 	user, err := model.NewUserDaoInstance().FindUserByName(username)
 	if err != nil {
 		panic("调用UserDao的FindUserByName方法，根据用户名查询User失败")
@@ -34,7 +42,7 @@ func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequ
 	resp.StatusCode = 0
 	resp.StatusMsg = "登录成功"
 	resp.UserId = user.UserId
-	resp.Token = "abcabc"
+	resp.Token = ""
 	return nil
 }
 
@@ -45,6 +53,15 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 	//查询用户名，没有错误（能查到）
 	username := req.Username
 	password := req.Password
+
+	if username == "" || password == "" {
+		resp.StatusCode = -1
+		resp.StatusMsg = "用户名或密码不能为空"
+		resp.UserId = -1
+		resp.Token = ""
+		return nil
+	}
+
 	if _, err := model.NewUserDaoInstance().FindUserByName(username); err == nil {
 		fmt.Println("用户名已经存在")
 		resp.StatusCode = -1
@@ -87,6 +104,13 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserRequest, resp *services.DouyinUserResponse) error {
 	userId := req.UserId     //传入的参数
 	tokenUserId := req.Token //token解析出来的userId
+
+	if userId <= 0 || tokenUserId == "" {
+		resp.StatusCode = -1
+		resp.StatusMsg = "传入参数不全，不能为空"
+		resp.User = &services.User{}
+		return nil
+	}
 
 	//curUserId, err := strconv.ParseInt(currentUserId, 10, 64) //当前用户的id
 	tokenUserIdConv, err := strconv.ParseInt(tokenUserId, 10, 64) //当前用户的id
