@@ -22,7 +22,7 @@ func Init() {
 		fmt.Println("配置文件读取错误，请检查文件路径:", err)
 	}
 	LoadMysqlData(file)
-	path := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8&parseTime=true"}, "")
+	path := strings.Join([]string{DbUser, ":", DbPassWord, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8&parseTime=True&loc=Local"}, "")
 	model.Database(path)
 }
 

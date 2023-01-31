@@ -4,6 +4,7 @@ import (
 	"api-gateway/pkg/utils"
 	"api-gateway/services"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -15,6 +16,15 @@ func Register(ginCtx *gin.Context) {
 	//PanicIfUserError(ginCtx.Bind(&userReq))
 	userReq.Username = ginCtx.Query("username")
 	userReq.Password = ginCtx.Query("password")
+	if userReq.Username == "" || userReq.Password == "" {
+		ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
+			StatusCode: -1,
+			StatusMsg:  "用户名或密码不能为空",
+			UserId:     -1,
+			Token:      "",
+		})
+		return
+	}
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
 	userResp, err := userService.Register(context.Background(), &userReq)
@@ -35,12 +45,22 @@ func Login(ginCtx *gin.Context) {
 	//PanicIfUserError(ginCtx.Bind(&userReq))
 	userReq.Username = ginCtx.Query("username")
 	userReq.Password = ginCtx.Query("password")
+	if userReq.Username == "" || userReq.Password == "" {
+		ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
+			StatusCode: -1,
+			StatusMsg:  "用户名或密码不能为空",
+			UserId:     -1,
+			Token:      "",
+		})
+		return
+	}
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
 	userResp, err := userService.Login(context.Background(), &userReq)
 	PanicIfUserError(err)
 	token, err := utils.GenerateToken(userResp.UserId)
 
+	fmt.Println("登录的token是:" + token)
 	ginCtx.JSON(http.StatusOK, services.DouyinUserLoginResponse{
 		StatusCode: userResp.StatusCode,
 		StatusMsg:  userResp.StatusMsg,

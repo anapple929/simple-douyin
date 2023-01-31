@@ -97,13 +97,6 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 		return err
 	}
 
-	if userId != tokenUserIdConv {
-		resp.StatusCode = 1
-		resp.StatusMsg = "认证失败，请重新登陆"
-		resp.User = &services.User{}
-		return nil
-	}
-
 	//2. 根据userId查询User
 	user, err := model.NewUserDaoInstance().FindUserById(userId)
 	if err != nil {
@@ -114,6 +107,12 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 	}
 
 	isFollow := false
+	//这里可以做成根据tokenUserIdConv和userId查找relation表，判断isFollow tokenUserIdConv代表了当前用户的id,userId代表了想查找的id
+	//如果当前用户查找的是自己的信息，那么是否关注的关系返回
+	if _, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv); err == nil {
+		//当前用户关注了user_id用户
+		isFollow = true
+	}
 
 	resp.StatusCode = 0
 	resp.StatusMsg = "查询用户信息成功"
