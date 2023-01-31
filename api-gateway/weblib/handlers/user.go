@@ -27,9 +27,9 @@ func Register(ginCtx *gin.Context) {
 	}
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
-	userResp, err := userService.Register(context.Background(), &userReq)
-	PanicIfUserError(err)
-	token, err := utils.GenerateToken(userResp.UserId)
+	userResp, _ := userService.Register(context.Background(), &userReq)
+	//PanicIfUserError(err)
+	token, _ := utils.GenerateToken(userResp.UserId)
 
 	ginCtx.JSON(http.StatusOK, services.DouyinUserRegisterResponse{
 		StatusCode: userResp.StatusCode,
@@ -56,9 +56,9 @@ func Login(ginCtx *gin.Context) {
 	}
 	// 从gin.Key中取出服务实例
 	userService := ginCtx.Keys["userService"].(services.UserService)
-	userResp, err := userService.Login(context.Background(), &userReq)
-	PanicIfUserError(err)
-	token, err := utils.GenerateToken(userResp.UserId)
+	userResp, _ := userService.Login(context.Background(), &userReq)
+	//PanicIfUserError(err)
+	token, _ := utils.GenerateToken(userResp.UserId)
 
 	fmt.Println("登录的token是:" + token)
 	ginCtx.JSON(http.StatusOK, services.DouyinUserLoginResponse{
