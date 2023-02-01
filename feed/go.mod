@@ -3,10 +3,7 @@ module feed
 go 1.18
 
 require (
-<<<<<<< HEAD
-=======
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
->>>>>>> 7d37cac7c00e284ee5031d5d3ad2cad9d3258d4c
 	github.com/golang/protobuf v1.4.0
 	github.com/micro/go-micro/v2 v2.9.1
 	google.golang.org/protobuf v1.22.0
