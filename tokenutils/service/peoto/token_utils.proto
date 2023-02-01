@@ -1,0 +1,16 @@
+syntax = "proto3";
+package services;
+option go_package = "../;service";
+message GetIdByToken_request {
+  string user_token = 1; // token
+
+}
+
+message GetIdByToken_response {
+  int32 user_id = 1; // 用户id
+
+}
+service TokenService{
+  rpc GetIdByToken(GetIdByToken_request) returns (GetIdByToken_response);
+}
+
