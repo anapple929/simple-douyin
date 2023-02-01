@@ -1,0 +1,74 @@
+syntax = "proto3";
+package services;
+option go_package = "../;publish";
+
+message DouyinPublishListRequest {
+  // @gotags: json:"user_id"
+  int64 UserId = 1; // 用户id
+  // @gotags: json:"token"
+  string Token = 2; // 用户鉴权token
+}
+
+message DouyinPublishListResponse {
+  // @gotags: json:"status_code"
+  int32 StatusCode = 1; // 状态码，0-成功，其他值-失败
+  // @gotags: json:"status_msg"
+  string StatusMsg = 2; // 返回状态描述
+  // @gotags: json:"video_list"
+  repeated Video VideoList = 3; // 用户发布的视频列表
+}
+
+message Video {
+  // @gotags: json:"id"
+  int64 Id = 1; // 视频唯一标识
+  // @gotags: json:"author"
+  User Author = 2; // 视频作者信息
+  // @gotags: json:"play_url"
+  string PlayUrl = 3; // 视频播放地址
+  // @gotags: json:"cover_url"
+  string CoverUrl = 4; // 视频封面地址
+  // @gotags: json:"favorite_count"
+  int64 FavoriteCount = 5; // 视频的点赞总数
+  // @gotags: json:"comment_count"
+  int64 CommentCount = 6; // 视频的评论总数
+  // @gotags: json:"is_favorite"
+  bool IsFavorite = 7; // true-已点赞，false-未点赞
+  // @gotags: json:"title"
+  string Title = 8; // 视频标题
+}
+
+message User {
+  // @gotags: json:"id"
+  int64 Id = 1; // 用户id
+  // @gotags: json:"name"
+  string Name = 2; // 用户名称
+  // @gotags: json:"follow_count"
+  int64 FollowCount = 3; // 关注总数
+  // @gotags: json:"follower_count"
+  int64 FollowerCount = 4; // 粉丝总数
+  // @gotags: json:"is_follow"
+  bool IsFollow = 5; // true-已关注，false-未关注
+}
+
+message DouyinPublishActionRequest {
+  // @gotags: json:"token"
+  string Token = 1; // 用户鉴权token
+  // @gotags: json:"data"
+  bytes Data = 2; // 视频数据
+  // @gotags: json:"title"
+  string Title = 3; // 视频标题
+}
+
+message DouyinPublishActionResponse {
+  // @gotags: json:"status_code"
+  int32 StatusCode = 1; // 状态码，0-成功，其他值-失败
+  // @gotags: json:"status_msg"
+  string StatusMsg = 2; // 返回状态描述
+}
+
+
+
+service PublishService{
+  rpc PublishList(DouyinPublishListRequest) returns (DouyinPublishListResponse);
+  rpc Publish(DouyinPublishActionRequest) returns(DouyinPublishActionResponse);
+}

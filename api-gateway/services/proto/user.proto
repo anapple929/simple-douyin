@@ -1,6 +1,6 @@
 syntax = "proto3";
 package services;
-option go_package = "../;proto";
+option go_package = "../user;user";
 
 message DouyinUserRegisterRequest {
   // @gotags: json:"username"

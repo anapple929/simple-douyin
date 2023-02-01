@@ -15,5 +15,6 @@
 # vendor/
 user/go.sum
 api-gateway/go.sum
+publish/go.sum
 runtime/logs/log20230131.log
 .idea

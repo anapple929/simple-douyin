@@ -5,9 +5,8 @@ go 1.18
 require (
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.8.2
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.0
 	github.com/micro/go-micro/v2 v2.9.1
 	google.golang.org/protobuf v1.28.1
 )
@@ -32,9 +31,6 @@ require (
 	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/google/uuid v1.1.1 // indirect
-	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
-	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.9 // indirect
@@ -81,3 +77,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.0.1-2019.2.3 // indirect
 )
+
+replace github.com/golang/protobuf => github.com/golang/protobuf v1.4.3
+
+replace google.golang.org/protobuf => google.golang.org/protobuf v1.22.0

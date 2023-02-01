@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(service ...interface{}) *gin.Engine {
+func NewRouter(service map[string]interface{}) *gin.Engine {
 	ginRouter := gin.Default()
 	ginRouter.Use(middleware.InitMiddleware(service))
 	//store := cookie.NewStore([]byte("something-very-secret"))
@@ -26,6 +26,8 @@ func NewRouter(service ...interface{}) *gin.Engine {
 		authed.Use(middleware.JWT())
 		{
 			v1.GET("user/", handlers.UserInfo)
+			v1.POST("publish/action/", handlers.Publish)
+			v1.GET("publish/list/", handlers.PublishList)
 			/*authed.POST("task", handlers.CreateTask)
 			authed.GET("task/:id", handlers.GetTaskDetail) // task_id
 			authed.PUT("task/:id", handlers.UpdateTask)    // task_id

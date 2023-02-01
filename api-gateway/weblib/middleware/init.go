@@ -5,13 +5,14 @@ import (
 )
 
 // 接受服务实例，并存到gin.Key中
-func InitMiddleware(service []interface{}) gin.HandlerFunc {
+func InitMiddleware(serviceMap map[string]interface{}) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		// 将实例存在gin.Keys中
 		context.Keys = make(map[string]interface{})
 		//	fmt.Printf("进入了init方法，service[0]=")
 		//	fmt.Println(service[0])
-		context.Keys["userService"] = service[0]
+		context.Keys = serviceMap
+		//context.Keys["feedService"] = service[2]
 		//		context.Keys["taskService"] = service[1]
 		context.Next()
 	}
