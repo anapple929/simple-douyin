@@ -3,9 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 	"user/model"
+	"user/rpc"
 	"user/services"
 	"user/utils"
 )
@@ -14,6 +14,7 @@ import (
 用户登录service层
 */
 func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequest, resp *services.DouyinUserLoginResponse) error {
+	fmt.Println("进入登录")
 	username := req.Username
 	password := req.Password
 	if username == "" || password == "" {
@@ -50,6 +51,7 @@ func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequ
 注册 service层
 */
 func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegisterRequest, resp *services.DouyinUserRegisterResponse) error {
+	fmt.Println("进入注册")
 	//查询用户名，没有错误（能查到）
 	username := req.Username
 	password := req.Password
@@ -102,24 +104,26 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 登录用户的详细信息 service层
 */
 func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserRequest, resp *services.DouyinUserResponse) error {
-	userId := req.UserId     //传入的参数
-	tokenUserId := req.Token //token解析出来的userId
-
-	if userId <= 0 || tokenUserId == "" {
-		resp.StatusCode = -1
-		resp.StatusMsg = "传入参数不全，不能为空"
-		resp.User = &services.User{}
-		return nil
-	}
+	tokenUserIdConv := rpc.GetIdByToken(req.Token)
+	fmt.Println(tokenUserIdConv)
+	userId := req.UserId //传入的参数
+	//tokenUserId := req.Token //token解析出来的userId
+	//
+	//if userId <= 0 || tokenUserId == "" {
+	//	resp.StatusCode = -1
+	//	resp.StatusMsg = "传入参数不全，不能为空"
+	//	resp.User = &services.User{}
+	//	return nil
+	//}
 
 	//curUserId, err := strconv.ParseInt(currentUserId, 10, 64) //当前用户的id
-	tokenUserIdConv, err := strconv.ParseInt(tokenUserId, 10, 64) //当前用户的id
-	if err != nil {
-		resp.StatusCode = 1
-		resp.StatusMsg = "类型转换失败"
-		resp.User = &services.User{}
-		return err
-	}
+	//tokenUserIdConv, err := strconv.ParseInt(tokenUserId, 10, 64) //当前用户的id
+	//if err != nil {
+	//	resp.StatusCode = 1
+	//	resp.StatusMsg = "类型转换失败"
+	//	resp.User = &services.User{}
+	//	return err
+	//}
 
 	//2. 根据userId查询User
 	user, err := model.NewUserDaoInstance().FindUserById(userId)
@@ -133,6 +137,7 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 	isFollow := false
 	//这里可以做成根据tokenUserIdConv和userId查找relation表，判断isFollow tokenUserIdConv代表了当前用户的id,userId代表了想查找的id
 	//如果当前用户查找的是自己的信息，那么是否关注的关系返回
+	////TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
 	if _, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv); err == nil {
 		//当前用户关注了user_id用户
 		isFollow = true

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"api-gateway/pkg/utils"
-	"api-gateway/services/publish"
 	user "api-gateway/services/user"
 	"context"
 	"fmt"
@@ -69,15 +68,15 @@ func UserInfo(ginCtx *gin.Context) {
 	userReq.UserId = user_id
 
 	userReq.Token = ginCtx.Query("token")
-	claim, err := utils.ParseToken(userReq.Token)
-	if err != nil {
-		ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
-			StatusCode: -1,
-			StatusMsg:  "token失效，请重新登录",
-		})
-	}
-	currentUserId := strconv.FormatInt(claim.Id, 10)
-	userReq.Token = currentUserId
+	//claim, err := utils.ParseToken(userReq.Token)
+	//if err != nil {
+	//	ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
+	//		StatusCode: -1,
+	//		StatusMsg:  "token失效，请重新登录",
+	//	})
+	//}
+	//currentUserId := strconv.FormatInt(claim.Id, 10)
+	//userReq.Token = currentUserId
 
 	userService := ginCtx.Keys["userService"].(user.UserService)
 	userResp, err := userService.UserInfo(context.Background(), &userReq)

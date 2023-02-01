@@ -22,7 +22,7 @@ gorm+gin+go-micro+mysql 极简版抖音
 ---
 ### 运行
 1. fork 项目到自己的仓库，随便找一个本地文件夹，在当前目录下`git clone XXX`
-2. 在 goland 中打开，进入每个微服务`go build`，
+2. 在 goland 中打开，进入每个微服务`go mod tidy`，
 3. 将 etcd 运行起来
 4. 运行每个微服务的main.go
 5. postman或前端项目测试接口，入口是统一的网关：localhost:4000/douyin/xxx

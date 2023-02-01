@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -63,4 +64,15 @@ func (d *VideoDao) FindVideoById(id int64) (*Video, error) {
 		return nil, err
 	}
 	return &video, err
+}
+
+//根据UserId，查出Video列表
+func (*VideoDao) QueryVideoByUserId(userId int64) ([]*Video, error) {
+	var videos []*Video
+	err := DB.Where("user_id = ?", userId).Find(&videos).Error
+	if err != nil {
+		fmt.Println("查询Video列表失败")
+		return nil, err
+	}
+	return videos, nil
 }
