@@ -27,7 +27,7 @@ func main() {
 	// publish
 	publishMicroService := micro.NewService(
 		micro.Name("publishService.client"),
-		micro.WrapClient(wrappers.NewUserWrapper),
+		micro.WrapClient(wrappers.NewPublishWrapper),
 	)
 	// publish服务调用实例
 	publishService := publish.NewPublishService("rpcPublishService", publishMicroService.Client())
@@ -43,8 +43,8 @@ func main() {
 		//将服务调用实例使用gin处理
 		web.Handler(weblib.NewRouter(serviceMap)),
 		web.Registry(etcdReg),
-		web.RegisterTTL(time.Second*30),
-		web.RegisterInterval(time.Second*15),
+		web.RegisterTTL(time.Second*300),
+		web.RegisterInterval(time.Second*150),
 		web.Metadata(map[string]string{"protocol": "http"}),
 	)
 	//接收命令行参数

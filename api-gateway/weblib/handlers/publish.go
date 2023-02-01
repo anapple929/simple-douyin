@@ -40,7 +40,13 @@ func Publish(ginCtx *gin.Context) {
 	//fmt.Println(publishReq.Token)
 
 	//token中的userId提取出来
-	claim, _ := utils.ParseToken(publishReq.Token)
+	claim, err := utils.ParseToken(publishReq.Token)
+	if err != nil {
+		ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
+			StatusCode: -1,
+			StatusMsg:  "token失效，请重新登录",
+		})
+	}
 	currentPublishId := strconv.FormatInt(claim.Id, 10)
 	publishReq.Token = currentPublishId
 
@@ -56,6 +62,21 @@ func Publish(ginCtx *gin.Context) {
 
 func PublishList(ginCtx *gin.Context) {
 	var publishReq publish.DouyinPublishListRequest
+	//token中的userId提取出来
+	claim, err := utils.ParseToken(publishReq.Token)
+	if err != nil {
+		ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
+			StatusCode: -1,
+			StatusMsg:  "token失效，请重新登录",
+		})
+	}
+	currentPublishId := strconv.FormatInt(claim.Id, 10)
+	publishReq.Token = currentPublishId
+
+	//user_id绑定req.userId
+	userId, _ := strconv.ParseInt(ginCtx.Query("user_id"), 10, 64)
+	publishReq.UserId = userId
+
 	// 从gin.Key中取出服务实例
 	publishService := ginCtx.Keys["publishService"].(publish.PublishService)
 	publishResp, _ := publishService.PublishList(context.Background(), &publishReq)
