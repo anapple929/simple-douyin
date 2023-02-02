@@ -1,0 +1,60 @@
+syntax = "proto3";
+package services;
+option go_package = "../;service";
+
+message UpdateFavoriteCount_request {
+  int64 video_id = 1; // 视频id
+  int32 count = 2;// 增加的数量
+  int32 type = 3;// 1是增加，2是减少
+}
+
+message UpdateFavoriteCount_response {
+  int32 status_code = 1; //响应，成功是0，失败是其他值
+}
+
+message GetVideoById_request {
+  int64 video_id = 1; // 视频id
+}
+
+message GetVideoById_response {
+  int64 video_id = 1;//视频id
+  repeated Video VideoList = 3; //视频集合
+}
+
+message Video {
+  // @gotags: json:"id"
+  int64 Id = 1; // 视频唯一标识
+  // @gotags: json:"author"
+  User Author = 2; // 视频作者信息
+  // @gotags: json:"play_url"
+  string PlayUrl = 3; // 视频播放地址
+  // @gotags: json:"cover_url"
+  string CoverUrl = 4; // 视频封面地址
+  // @gotags: json:"favorite_count"
+  int64 FavoriteCount = 5; // 视频的点赞总数
+  // @gotags: json:"comment_count"
+  int64 CommentCount = 6; // 视频的评论总数
+  // @gotags: json:"is_favorite"
+  bool IsFavorite = 7; // true-已点赞，false-未点赞
+  // @gotags: json:"title"
+  string Title = 8; // 视频标题
+}
+
+message User {
+  // @gotags: json:"id"
+  int64 Id = 1; // 用户id
+  // @gotags: json:"name"
+  string Name = 2; // 用户名称
+  // @gotags: json:"follow_count"
+  int64 FollowCount = 3; // 关注总数
+  // @gotags: json:"follower_count"
+  int64 FollowerCount = 4; // 粉丝总数
+  // @gotags: json:"is_follow"
+  bool IsFollow = 5; // true-已关注，false-未关注
+}
+
+service TokenService{
+  rpc UpdateFavoriteCount(UpdateFavoriteCount_request) returns (UpdateFavoriteCount_response);//给视频点赞
+  rpc GetVideoById(GetVideoById_request) returns (GetVideoById_response);//根据视频id获取视频集合
+}
+

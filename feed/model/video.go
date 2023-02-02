@@ -65,9 +65,7 @@ func (*VideoDao) QueryVideoByUserId(userId int64) ([]*Video, error) {
 //根据时间和需要查询的条数，获取video列表
 func (*VideoDao) QueryVideo(date *string, limit int) []*Video {
 	fmt.Println(*date)
-
 	var VideoList []*Video
-	fmt.Println(DB)
 	DB.Where("create_at < ?", *date).Order("create_at desc").Find(&VideoList)
 	if len(VideoList) <= limit {
 		fmt.Println(VideoList)
