@@ -6,7 +6,9 @@ import (
 	"github.com/micro/go-micro/v2/registry/etcd"
 	"publish/conf"
 	"publish/core"
+	toFavorite "publish/core/tofavorite"
 	"publish/services"
+	protoToFavorite "publish/services/to_favorite"
 )
 
 func main() {
@@ -25,6 +27,7 @@ func main() {
 	microService.Init()
 	// 服务注册
 	_ = services.RegisterPublishServiceHandler(microService.Server(), new(core.PublishService))
+	_ = protoToFavorite.RegisterToFavoriteServiceHandler(microService.Server(), new(toFavorite.ToFavoriteService))
 	// 启动微服务
 	_ = microService.Run()
 }

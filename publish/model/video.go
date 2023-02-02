@@ -75,16 +75,16 @@ func (*VideoDao) AddCommentCount(videoId int64, cnt int) {
 
 //favorite
 //传入视频id，增加cnt条点赞数
-func (*VideoDao) AddFavoriteCount(videoId int64, cnt int) {
-	err := DB.Model(&Video{}).Where("video_id=?", videoId).Update("favorite_count", gorm.Expr("comment_count+?", cnt)).Error
+func (*VideoDao) AddFavoriteCount(videoId int64, cnt int32) {
+	err := DB.Model(Video{}).Where("video_id=?", videoId).Update("favorite_count", gorm.Expr("favorite_count+?", cnt)).Error
 	if err != nil {
 		//log.Error(err)
 	}
 }
 
 //传入视频id，减少cnt条点赞数
-func (*VideoDao) ReduceFavoriteCount(videoId int64, cnt int) {
-	err := DB.Model(&Video{}).Where("video_id=?", videoId).Update("favotite_count", gorm.Expr("comment_count-?", cnt)).Error
+func (*VideoDao) ReduceFavoriteCount(videoId int64, cnt int32) {
+	err := DB.Model(Video{}).Where("video_id=?", videoId).Update("favorite_count", gorm.Expr("favorite_count-?", cnt)).Error
 	if err != nil {
 		//log.Error(err)
 	}
@@ -102,4 +102,16 @@ func (d *VideoDao) FindVideoById(videoId int64) (*Video, error) {
 		return nil, err
 	}
 	return &video, err
+}
+
+func (*VideoDao) GetVideosByIds(videoIds []int64) ([]*Video, error) {
+	var videos []*Video
+
+	err := DB.Where("video_id IN (?)", videoIds).Find(&videos).Error
+	if err != nil {
+		fmt.Println("model层查询Video列表失败")
+		return nil, err
+	}
+
+	return videos, nil
 }

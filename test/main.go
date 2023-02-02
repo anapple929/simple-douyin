@@ -6,30 +6,53 @@ import (
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-micro/v2/registry/etcd"
-	services "test/services"
+	services "test/services/to_favorite"
 )
 
 func main() {
+	//测试第一个功能
 
+	//etcdReg := etcd.NewRegistry(
+	//	registry.Addrs("127.0.0.1:2379"),
+	//)
+	//
+	////// 服务调用实例
+	//MicroService := micro.NewService(micro.Registry(etcdReg))
+	//Service := services.NewToFavoriteService("rpcPublishService", MicroService.Client()) //client.DefaultClient
+	//
+	//var req services.UpdateFavoriteCountRequest
+	//fmt.Println("到这里了")
+	//
+	//req.VideoId = 30
+	//req.Count = 1
+	//req.Type = 1
+	//
+	//resp, err := Service.UpdateFavoriteCount(context.TODO(), &req)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//fmt.Println(resp.StatusCode)
 	etcdReg := etcd.NewRegistry(
 		registry.Addrs("127.0.0.1:2379"),
 	)
 
+	//测试第二个功能
 	//// 服务调用实例
+	MicroService := micro.NewService(micro.Registry(etcdReg))
+	Service := services.NewToFavoriteService("rpcPublishService", MicroService.Client()) //client.DefaultClient
 
-	tokenMicroService := micro.NewService(micro.Name("tokenService.client"), micro.Registry(etcdReg))
+	var req services.GetVideosByIdsRequest
 
-	tokenService := services.NewTokenService("rpcTokenService", tokenMicroService.Client()) //client.DefaultClient
+	var videoId []int64
+	videoId = append(videoId, 26)
+	videoId = append(videoId, 27)
+	videoId = append(videoId, 28)
+	videoId = append(videoId, 30)
+	req.VideoId = videoId
 
-	var req services.GetIdByTokenRequest
-	fmt.Println("到这里了")
-
-	req.UserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDksImV4cCI6MTY3NTI3NTU3OSwiaXNzIjoiMTEyMjIzMyJ9.oiBkALbk8qJnIbUOZXzO9oEulKqwxeabVQ1b2VCEOJM"
-
-	resp, err := tokenService.GetIdByToken(context.TODO(), &req)
+	resp, err := Service.GetVideosByIds(context.TODO(), &req)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(resp.UserId)
-
+	fmt.Println(resp.VideoList)
 }

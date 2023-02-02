@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"publish/model"
-	"publish/rpc"
+	"publish/rpc_server"
 	"publish/services"
 	utils "publish/utils"
 	"time"
@@ -16,10 +16,10 @@ func (*PublishService) Publish(ctx context.Context, req *services.DouyinPublishA
 	fmt.Println("publish service层")
 
 	//获取userId
-	tokenUserIdConv := rpc.GetIdByToken(req.Token)
+	tokenUserIdConv, _ := rpc_server.GetIdByToken(req.Token)
 	//tokenUserIdConv, err := strconv.ParseInt(tokenUserId, 10, 64) //token解析出来的userId
 	//
-	// = rpc.GetIdByToken(req.Token)
+	// = rpc_server.GetIdByToken(req.Token)
 
 	//if tokenUserId == "" {
 	//	resp.StatusCode = -1
@@ -91,7 +91,7 @@ func BuildProtoVideo(item *model.Video) *services.Video {
 		CoverUrl:      item.CoverUrl,
 		FavoriteCount: item.FavoriteCount,
 		CommentCount:  item.CommentCount,
-		IsFavorite:    false, // //TODO 这里需要调用点赞表，来获取一个用户是否喜欢这个视频，目前传成了false
+		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId), // //TODO 这里需要调用点赞表，来获取一个用户是否喜欢这个视频，目前传成了false(已完成)
 		Title:         item.Title,
 	}
 	return &video
@@ -99,7 +99,7 @@ func BuildProtoVideo(item *model.Video) *services.Video {
 
 func BuildProtoUser(item_id int64) *services.User {
 	//根据id查user，封装成user //TODO，调用，用户的tokenrpc还没完全封装好，明天封装token(已完成)
-	rpcUserInfo := rpc.GetUserInfo(item_id, token)
+	rpcUserInfo, _ := rpc_server.GetUserInfo(item_id, token)
 	user := services.User{
 		Id:            rpcUserInfo.Id,
 		Name:          rpcUserInfo.Name,

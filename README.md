@@ -8,6 +8,7 @@ gorm+gin+go-micro+mysql 极简版抖音
 * token 8089
 * publish 8083
 * feed 8084
+* favorite 8086
 ---
 ### mysql 
 43.138.51.56:3306  
@@ -34,7 +35,9 @@ gorm+gin+go-micro+mysql 极简版抖音
 * /douyin/user/login/
 * /douyin/user/register/
 * /douyin/user/
-* /douyin/publish/action
-* /douyin/publish/list
+* /douyin/publish/action/
+* /douyin/publish/list/
+* /douyin/feed/
+---
 ### 注意
 测试视频上传功能时，电脑要下载ffmpeg，并配置到环境变量中。

@@ -12,13 +12,13 @@ message UpdateFavoriteCount_response {
   int32 status_code = 1; //响应，成功是0，失败是其他值
 }
 
-message GetVideoById_request {
-  repeated int64 video_id = 1; // 视频id
+message GetVideosByIds_request {
+  repeated int64 video_id = 1; // 视频集合
 }
 
-message GetVideoById_response {
-  int64 video_id = 1;//视频id
-  repeated Video VideoList = 3; //视频集合
+message GetVideosByIds_response {
+  int32 status_code = 1; //响应，成功是0，失败是其他值
+  repeated Video VideoList = 2; //视频集合
 }
 
 message Video {
@@ -53,8 +53,8 @@ message User {
   bool IsFollow = 5; // true-已关注，false-未关注
 }
 
-service TokenService{
+service ToFavoriteService{
   rpc UpdateFavoriteCount(UpdateFavoriteCount_request) returns (UpdateFavoriteCount_response);//给视频点赞
-  rpc GetVideoById(GetVideoById_request) returns (GetVideoById_response);//根据视频id获取视频集合
+  rpc GetVideosByIds(GetVideosByIds_request) returns (GetVideosByIds_response);//根据视频id获取视频集合
 }
 
