@@ -1,35 +1,31 @@
 package main
 
 import (
-	"context"
-	services "feed/services"
-	"fmt"
+	"feed/conf"
+	"feed/core"
+	service "feed/services"
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-micro/v2/registry/etcd"
 )
 
 func main() {
-
+	conf.Init()
 	etcdReg := etcd.NewRegistry(
 		registry.Addrs("127.0.0.1:2379"),
 	)
-
-	//// 服务调用实例
-
-	tokenMicroService := micro.NewService(micro.Name("tokenService.client"), micro.Registry(etcdReg))
-
-	tokenService := services.NewTokenService("rpcTokenService", tokenMicroService.Client()) //client.DefaultClient
-
-	var req services.GetIdByTokenRequest
-	fmt.Println("到这里了")
-
-	req.UserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDksImV4cCI6MTY3NTI3NTU3OSwiaXNzIjoiMTEyMjIzMyJ9.oiBkALbk8qJnIbUOZXzO9oEulKqwxeabVQ1b2VCEOJM"
-
-	resp, err := tokenService.GetIdByToken(context.TODO(), &req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(resp.UserId)
+	// 得到一个微服务实例
+	microService := micro.NewService(
+		micro.Name("rpcFeedService"), // 微服务名字
+		micro.Address("127.0.0.1:8084"),
+		micro.Registry(etcdReg), // etcd注册件
+		micro.Metadata(map[string]string{"protocol": "http"}),
+	)
+	// 结构命令行参数，初始化
+	microService.Init()
+	// 服务注册
+	_ = service.RegisterFeedServiceHandler(microService.Server(), new(core.FeedService))
+	// 启动微服务
+	_ = microService.Run()
 
 }

@@ -104,8 +104,18 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 登录用户的详细信息 service层
 */
 func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserRequest, resp *services.DouyinUserResponse) error {
-	tokenUserIdConv := rpc.GetIdByToken(req.Token)
-	fmt.Println(tokenUserIdConv)
+	var tokenUserIdConv int64
+	tokenUserIdConv = -1 //设置一下token解析出的id初始值，token是可选参数，如果没有解析出的token，值还是-1
+
+	if req.Token == "" {
+		//可能会有一些不需要登录，但是需要请求用户信息的服务调用，比如未登录刷视频查询用户信息的时候，token=""
+
+	} else {
+		//token有值，解析,解析后就可以看两个用户是否关注
+		tokenUserIdConv = rpc.GetIdByToken(req.Token)
+		fmt.Println(tokenUserIdConv)
+	}
+
 	userId := req.UserId //传入的参数
 	//tokenUserId := req.Token //token解析出来的userId
 	//
@@ -138,9 +148,12 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 	//这里可以做成根据tokenUserIdConv和userId查找relation表，判断isFollow tokenUserIdConv代表了当前用户的id,userId代表了想查找的id
 	//如果当前用户查找的是自己的信息，那么是否关注的关系返回
 	////TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
-	if _, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv); err == nil {
-		//当前用户关注了user_id用户
-		isFollow = true
+	if tokenUserIdConv != -1 {
+		//有token，查一下follow的关系
+		if _, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv); err == nil {
+			//当前用户关注了user_id用户
+			isFollow = true
+		}
 	}
 
 	resp.StatusCode = 0

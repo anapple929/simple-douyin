@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"sync"
 	"time"
 )
@@ -52,20 +53,6 @@ func (*VideoDao) CreateVideo(video *Video) (*Video, error) {
 	return video, nil
 }
 
-/**
-根据videoid，查找用户实体
-*/
-func (d *VideoDao) FindVideoById(id int64) (*Video, error) {
-	video := Video{VideoId: id}
-
-	result := DB.Where("Video_id = ?", id).First(&video)
-	err := result.Error
-	if err != nil {
-		return nil, err
-	}
-	return &video, err
-}
-
 //根据UserId，查出Video列表
 func (*VideoDao) QueryVideoByUserId(userId int64) ([]*Video, error) {
 	var videos []*Video
@@ -75,4 +62,44 @@ func (*VideoDao) QueryVideoByUserId(userId int64) ([]*Video, error) {
 		return nil, err
 	}
 	return videos, nil
+}
+
+//comment
+//传入视频id，增加cnt条评论数
+func (*VideoDao) AddCommentCount(videoId int64, cnt int) {
+	err := DB.Model(&Video{}).Where("video_id=?", videoId).Update("comment_count", gorm.Expr("comment_count+?", cnt)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+//favorite
+//传入视频id，增加cnt条点赞数
+func (*VideoDao) AddFavoriteCount(videoId int64, cnt int) {
+	err := DB.Model(&Video{}).Where("video_id=?", videoId).Update("favorite_count", gorm.Expr("comment_count+?", cnt)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+//传入视频id，减少cnt条点赞数
+func (*VideoDao) ReduceFavoriteCount(videoId int64, cnt int) {
+	err := DB.Model(&Video{}).Where("video_id=?", videoId).Update("favotite_count", gorm.Expr("comment_count-?", cnt)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据videoid，查找视频实体
+*/
+func (d *VideoDao) FindVideoById(videoId int64) (*Video, error) {
+	video := Video{VideoId: videoId}
+
+	result := DB.Where("video_id = ?", videoId).First(&video)
+	err := result.Error
+	if err != nil {
+		return nil, err
+	}
+	return &video, err
 }

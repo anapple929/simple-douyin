@@ -20,6 +20,7 @@ func NewRouter(service map[string]interface{}) *gin.Engine {
 		//v1.GET("/user/", handlers.UserInfo)
 		v1.POST("/user/register/", handlers.Register)
 		v1.POST("/user/login/", handlers.Login)
+		v1.GET("/feed/", handlers.Feed)
 
 		// 需要登录保护
 		authed := v1.Group("/")

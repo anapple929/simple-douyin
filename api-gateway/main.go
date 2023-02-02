@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api-gateway/services/feed"
 	"api-gateway/services/publish"
 	"api-gateway/services/user"
 	"api-gateway/weblib"
@@ -33,8 +34,18 @@ func main() {
 	publishService := publish.NewPublishService("rpcPublishService", publishMicroService.Client())
 
 	serviceMap := make(map[string]interface{})
+
+	// feed视频流
+	feedMicroService := micro.NewService(
+		micro.Name("feedrService.client"),
+		micro.WrapClient(wrappers.NewFeedWrapper),
+	)
+	// 视频流服务调用实例
+	feedService := feed.NewFeedService("rpcFeedService", feedMicroService.Client())
+
 	serviceMap["userService"] = userService
 	serviceMap["publishService"] = publishService
+	serviceMap["feedService"] = feedService
 
 	//创建微服务实例，使用gin暴露http接口并注册到etcd
 	server := web.NewService(
