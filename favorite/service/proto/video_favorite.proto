@@ -13,7 +13,7 @@ message UpdateFavoriteCount_response {
 }
 
 message GetVideoById_request {
-  repeated int64 video_id = 1; // 视频id
+  int64 video_id = 1; // 视频id
 }
 
 message GetVideoById_response {

@@ -10,6 +10,10 @@ import (
 // DB 数据库链接单例
 var DB *gorm.DB
 
+func init() {
+	DB, _ = gorm.Open("mysql", "root:jhr292023@tcp(43.138.51.56:3306)/simple-douyin?charset=utf8&parseTime=True&loc=Local")
+}
+
 // Database 在中间件中初始化mysql链接
 func Database(connString string) {
 	db, err := gorm.Open("mysql", connString)

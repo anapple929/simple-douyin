@@ -1,9 +1,11 @@
 package model
 
+import "time"
+
 type Favorite struct {
-	UserId   string
-	VideoId  string
-	CreateAt string
+	UserId   int64
+	VideoId  int64
+	CreateAt time.Time
 }
 
 func (Favorite) TableName() string {
