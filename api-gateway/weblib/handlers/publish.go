@@ -8,11 +8,12 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func Publish(ginCtx *gin.Context) {
 	var publishReq publish.DouyinPublishActionRequest
-
+	ctx, _ := context.WithTimeout(ginCtx, time.Minute*1)
 	//publishReq.Data = []byte(ginCtx.PostForm("data"))
 	publishReq.Title = ginCtx.PostForm("title")
 	publishReq.Token = ginCtx.PostForm("token")
@@ -51,7 +52,7 @@ func Publish(ginCtx *gin.Context) {
 
 	// 从gin.Key中取出服务实例
 	publishService := ginCtx.Keys["publishService"].(publish.PublishService)
-	publishResp, _ := publishService.Publish(context.Background(), &publishReq)
+	publishResp, _ := publishService.Publish(ctx, &publishReq)
 
 	ginCtx.JSON(http.StatusOK, publish.DouyinPublishActionResponse{
 		StatusCode: publishResp.StatusCode,
@@ -64,6 +65,7 @@ func PublishList(ginCtx *gin.Context) {
 	//token中的userId提取出来
 	publishReq.Token = ginCtx.Query("token")
 
+	ctx, _ := context.WithTimeout(ginCtx, time.Minute*1)
 	//claim, err := utils.ParseToken(ginCtx.Query("token"))
 	//if err != nil {
 	//	ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
@@ -80,10 +82,11 @@ func PublishList(ginCtx *gin.Context) {
 
 	// 从gin.Key中取出服务实例
 	publishService := ginCtx.Keys["publishService"].(publish.PublishService)
-	publishResp, _ := publishService.PublishList(context.Background(), &publishReq)
+	publishResp, _ := publishService.PublishList(ctx, &publishReq)
 
 	ginCtx.JSON(http.StatusOK, publish.DouyinPublishListResponse{
 		StatusCode: publishResp.StatusCode,
 		StatusMsg:  publishResp.StatusMsg,
+		VideoList:  publishResp.VideoList,
 	})
 }

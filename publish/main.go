@@ -7,7 +7,6 @@ import (
 	"publish/conf"
 	"publish/core"
 	"publish/services"
-	"time"
 )
 
 func main() {
@@ -21,7 +20,6 @@ func main() {
 		micro.Name("rpcPublishService"), // 微服务名字
 		micro.Address("127.0.0.1:8083"),
 		micro.Registry(etcdReg), // etcd注册件
-		micro.RegisterTTL(time.Second*300),
 	)
 	// 结构命令行参数，初始化
 	microService.Init()
