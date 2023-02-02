@@ -34,3 +34,7 @@ gorm+gin+go-micro+mysql 极简版抖音
 * /douyin/user/login/
 * /douyin/user/register/
 * /douyin/user/
+* /douyin/publish/action
+* /douyin/publish/list
+### 注意
+测试视频上传功能时，电脑要下载ffmpeg，并配置到环境变量中。
