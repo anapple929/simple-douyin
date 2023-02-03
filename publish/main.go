@@ -22,6 +22,7 @@ func main() {
 		micro.Name("rpcPublishService"), // 微服务名字
 		micro.Address("127.0.0.1:8083"),
 		micro.Registry(etcdReg), // etcd注册件
+		micro.Metadata(map[string]string{"protocol": "http"}),
 	)
 	// 结构命令行参数，初始化
 	microService.Init()

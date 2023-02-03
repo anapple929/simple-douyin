@@ -42,8 +42,13 @@ func (ToFavoriteService) UpdateFavoriteCount(ctx context.Context, req *proto.Upd
 根据videoId列表，获取Video列表
 */
 func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVideosByIdsRequest, resp *proto.GetVideosByIdsResponse) error {
+	//将video实体封装成resp.Video类型
+	var videoResult []*proto.Video
+
 	if len(req.VideoId) == 0 {
 		fmt.Println("videoId列表没有数据")
+		resp.StatusCode = 0
+		resp.VideoList = videoResult
 		return nil
 	}
 	fmt.Println("进入方法了")
@@ -54,8 +59,7 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 		resp.VideoList = nil
 		return errors.New("调用数据库出错！")
 	}
-	//将video实体封装成resp.Video类型
-	var videoResult []*proto.Video
+
 	for _, video := range videos {
 		videoResult = append(videoResult, BuildProtoVideo(video))
 	}
@@ -76,7 +80,7 @@ func BuildProtoVideo(item *model.Video) *proto.Video {
 		CoverUrl:      item.CoverUrl,
 		FavoriteCount: item.FavoriteCount,
 		CommentCount:  item.CommentCount,
-		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId), // //TODO 这里需要调用点赞表，来获取一个用户是否喜欢这个视频，目前传成了false(已完成)
+		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId),
 		Title:         item.Title,
 	}
 	return &video
@@ -86,7 +90,6 @@ func BuildProtoVideo(item *model.Video) *proto.Video {
 构造一个控制层User对象
 */
 func BuildProtoUser(item_id int64) *proto.User {
-	//根据id查user，封装成user //TODO，调用，用户的tokenrpc还没完全封装好，明天封装token(已完成)
 	rpcUserInfo, _ := rpc_server.GetUserInfo(item_id, "")
 	user := proto.User{
 		Id:            rpcUserInfo.Id,

@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"feed/model"
-	"feed/rpc"
+	"feed/rpc_server"
 	"feed/services"
 	"fmt"
 	"time"
@@ -24,7 +24,7 @@ func (*FeedService) Feed(ctx context.Context, req *services.DouyinFeedRequest, r
 	//formatTime, _ := time.Parse("2006-01-02 15:04:05", searchTime)
 	var videoResult []*services.Video
 
-	videos := model.NewVideoDaoInstance().QueryVideo(&searchTime, 30)
+	videos := model.NewVideoDaoInstance().QueryVideo(&searchTime, 5)
 
 	//遍历实体Video，封装到VideoResult中
 	for _, video := range videos {
@@ -46,15 +46,14 @@ func BuildProtoVideo(item *model.Video) *services.Video {
 		CoverUrl:      item.CoverUrl,
 		FavoriteCount: item.FavoriteCount,
 		CommentCount:  item.CommentCount,
-		IsFavorite:    false, // //TODO 这里需要调用点赞表，来获取一个用户是否喜欢这个视频，目前传成了false
+		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId),
 		Title:         item.Title,
 	}
 	return &video
 }
 
 func BuildProtoUser(item_id int64) *services.User {
-	//根据id查user，封装成user //TODO，调用，用户的tokenrpc还没完全封装好，明天封装token(已完成)
-	rpcUserInfo := rpc.GetUserInfo(item_id, "")
+	rpcUserInfo := rpc_server.GetUserInfo(item_id, "")
 	user := services.User{
 		Id:            rpcUserInfo.Id,
 		Name:          rpcUserInfo.Name,

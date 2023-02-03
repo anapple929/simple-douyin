@@ -1,20 +1,16 @@
-package rpc
+package rpc_server
 
 import (
 	"context"
+	etcdInit "feed/etcd"
 	userproto "feed/services/userproto"
 	"fmt"
 	"github.com/micro/go-micro/v2"
-	"github.com/micro/go-micro/v2/registry"
-	"github.com/micro/go-micro/v2/registry/etcd"
 )
 
 func GetUserInfo(userId int64, token string) userproto.User {
-	etcdReg := etcd.NewRegistry(
-		registry.Addrs("127.0.0.1:2379"),
-	)
 
-	userMicroService := micro.NewService(micro.Name("userService.client"), micro.Registry(etcdReg))
+	userMicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
 
 	userService := userproto.NewUserService("rpcUserService", userMicroService.Client()) //client.DefaultClient
 

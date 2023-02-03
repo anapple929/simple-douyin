@@ -46,7 +46,7 @@ func Login(ginCtx *gin.Context) {
 	userResp, _ := userService.Login(context.Background(), &userReq)
 	//PanicIfUserError(err)
 	var token string
-	if userResp.UserId > 0 {
+	if userResp != nil && userResp.UserId > 0 {
 		token, _ = utils.GenerateToken(userResp.UserId)
 	}
 

@@ -19,7 +19,7 @@ func FavoriteAction(ginCtx *gin.Context) {
 	req.VideoId = vid
 	action, _ := favService.FavoriteAction(ginCtx, &req)
 
-	ginCtx.JSON(http.StatusInternalServerError, fav.DouyinFavoriteActionResponse{
+	ginCtx.JSON(http.StatusOK, fav.DouyinFavoriteActionResponse{
 		StatusCode: action.StatusCode,
 		StatusMsg:  action.StatusMsg,
 	})

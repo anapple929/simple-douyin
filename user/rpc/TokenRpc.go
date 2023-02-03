@@ -14,7 +14,7 @@ func GetIdByToken(token string) int64 {
 		registry.Addrs("127.0.0.1:2379"),
 	)
 
-	tokenMicroService := micro.NewService(micro.Name("tokenService.client"), micro.Registry(etcdReg))
+	tokenMicroService := micro.NewService(micro.Registry(etcdReg))
 
 	tokenService := tokenproto.NewTokenService("rpcTokenService", tokenMicroService.Client()) //client.DefaultClient
 

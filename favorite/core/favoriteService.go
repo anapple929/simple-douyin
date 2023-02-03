@@ -53,7 +53,9 @@ func (*FavoriteService) FavoriteList(ctx context.Context, in *proto.DouyinFavori
 	videoIds = favmapper.GetVideoIds(id)
 	fmt.Println("videoIds==", videoIds)
 	resp := etcdInit.GetVideosByIds(videoIds)
+	//TODO 这里需要修改一下，videoIds=[],（没有点赞过视频），也会进入这个判断里。我测试了一下，返回[]空数组会进入这个报错判断，没有点赞过视频不应该进入报错。在feed流向下刷视频的时候报一个500的接口错误，如果feed流能运行起来可以测试一下。登录test3,密码123456，因为test3还没有点赞过，就可以看到500的错误了。
 	if resp == nil {
+		fmt.Println("出错了，....")
 		out.StatusCode = 500
 		out.StatusMsg = "获取视频失败"
 		return errors.New("远程调用，获取视频失败")

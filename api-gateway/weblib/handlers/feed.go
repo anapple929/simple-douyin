@@ -3,6 +3,7 @@ package handlers
 import (
 	"api-gateway/services/feed"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -20,7 +21,10 @@ func Feed(ginCtx *gin.Context) {
 
 	// 从gin.Key中取出服务实例
 	feedService := ginCtx.Keys["feedService"].(feed.FeedService)
-	feedResp, _ := feedService.Feed(ctx, &feedReq)
+	feedResp, err := feedService.Feed(ctx, &feedReq)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	ginCtx.JSON(http.StatusOK, feed.DouyinFeedResponse{
 		StatusCode: feedResp.StatusCode,

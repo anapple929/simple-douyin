@@ -10,7 +10,7 @@ import (
 
 func GetIdByToken(token string) (int64, error) {
 
-	tokenMicroService := micro.NewService(micro.Name("tokenService.client"), micro.Registry(etcdInit.EtcdReg))
+	tokenMicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
 
 	tokenService := proto.NewTokenService("rpcTokenService", tokenMicroService.Client()) //client.DefaultClient
 

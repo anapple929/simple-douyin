@@ -65,7 +65,7 @@ func (*PublishService) Publish(ctx context.Context, req *services.DouyinPublishA
 
 func (*PublishService) PublishList(ctx context.Context, req *services.DouyinPublishListRequest, resp *services.DouyinPublishListResponse) error {
 	fmt.Println("publishList service层")
-	token = req.Token //TODO UserInfo的token改了后，这里也要改（已完成）
+	token = req.Token
 
 	var videoResult []*services.Video
 
@@ -91,14 +91,14 @@ func BuildProtoVideo(item *model.Video) *services.Video {
 		CoverUrl:      item.CoverUrl,
 		FavoriteCount: item.FavoriteCount,
 		CommentCount:  item.CommentCount,
-		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId), // //TODO 这里需要调用点赞表，来获取一个用户是否喜欢这个视频，目前传成了false(已完成)
+		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId), //
 		Title:         item.Title,
 	}
 	return &video
 }
 
 func BuildProtoUser(item_id int64) *services.User {
-	//根据id查user，封装成user //TODO，调用，用户的tokenrpc还没完全封装好，明天封装token(已完成)
+	//根据id查user，封装成user
 	rpcUserInfo, _ := rpc_server.GetUserInfo(item_id, token)
 	user := services.User{
 		Id:            rpcUserInfo.Id,
