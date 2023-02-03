@@ -13,6 +13,7 @@ func NewRouter(service map[string]interface{}) *gin.Engine {
 	//ginRouter.Use(sessions.Sessions("mysession", store))
 	v1 := ginRouter.Group("/douyin")
 	{
+
 		v1.GET("ping", func(context *gin.Context) {
 			context.JSON(200, "success")
 		})
@@ -33,6 +34,11 @@ func NewRouter(service map[string]interface{}) *gin.Engine {
 			authed.GET("task/:id", handlers.GetTaskDetail) // task_id
 			authed.PUT("task/:id", handlers.UpdateTask)    // task_id
 			authed.DELETE("task/:id", handlers.DeleteTask) // task_id*/
+		}
+		fav := v1.Group("/favorite")
+		{
+			fav.POST("/action/", handlers.FavoriteAction)
+			fav.GET("/list/", handlers.FavoriteList)
 		}
 	}
 	return ginRouter

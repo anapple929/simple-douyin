@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"errors"
 	"favorite/model"
 	"fmt"
 	"sync"
@@ -34,6 +35,36 @@ func (m FavoriteMapper) GetFavoriteStatus(vid int64, uid int64) (bool, error) {
 	}
 
 	return count == 1, nil
+}
+
+func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) error {
+	db := model.DB
+	fav := &model.Favorite{
+		UserId:  uid,
+		VideoId: vid,
+	}
+	if actionType == 1 {
+		var count int
+		db.Where("user_id=? and video_id=?", uid, vid).Count(&count)
+		if count >= 1 {
+			db.Where("user_id=? and video_id=?", uid, vid).Delete(fav)
+		}
+
+		err := db.Create(fav).Error
+		if err != nil {
+			fmt.Println("点赞失败")
+			return err
+		}
+	} else if actionType == 2 {
+		err := db.Where("user_id=? and video_id=?", uid, vid).Delete(fav).Error
+		if err != nil {
+			fmt.Println("点赞删除失败")
+			return err
+		}
+	} else {
+		return errors.New("参数错误")
+	}
+	return nil
 }
 
 var favoriteMapper *FavoriteMapper
