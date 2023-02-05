@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"errors"
+	etcdInit "favorite/etcd"
 	"favorite/model"
 	"fmt"
 	"sync"
@@ -63,6 +64,10 @@ func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) e
 		}
 	} else {
 		return errors.New("参数错误")
+	}
+	action := etcdInit.CountAction(vid, 1, actionType)
+	if !action {
+		return errors.New("Mapper层Count维护失败")
 	}
 	return nil
 }

@@ -38,7 +38,6 @@ func FavoriteList(ginCtx *gin.Context) {
 	req.Token = token
 	req.UserId = uid
 	action, _ := favService.FavoriteList(ginCtx, &req)
-
 	ginCtx.JSON(http.StatusOK, fav.DouyinFavoriteListResponse{
 		StatusCode: action.StatusCode,
 		StatusMsg:  action.StatusMsg,

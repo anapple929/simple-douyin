@@ -9,6 +9,9 @@ import (
 )
 
 func GetIdByToken(token string) (int64, error) {
+	if "" == token {
+		return -1, nil
+	}
 
 	tokenMicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
 

@@ -19,7 +19,23 @@ func init() {
 	)
 
 }
-func GetVideosByIds(vids []int64) []*proto.Video {
+func CountAction(vid int64, count int32, actionType int32) bool {
+	MicroService := micro.NewService(micro.Registry(EtcdReg))
+	Service := frompublish.NewToFavoriteService("rpcPublishService", MicroService.Client())
+	var req frompublish.UpdateFavoriteCountRequest
+	req.VideoId = vid
+	req.Count = count
+	req.Type = actionType
+	favoriteCount, err := Service.UpdateFavoriteCount(context.TODO(), &req)
+	if err != nil || favoriteCount.StatusCode != 0 {
+		fmt.Println("favoriteCount维护失败:", err)
+		return false
+	}
+	return true
+
+}
+
+func GetVideosByIds(vids []int64) ([]*proto.Video, error) {
 	//// 服务调用实例
 
 	MicroService := micro.NewService(micro.Registry(EtcdReg))
@@ -31,10 +47,10 @@ func GetVideosByIds(vids []int64) []*proto.Video {
 	resp, err := Service.GetVideosByIds(context.TODO(), &req)
 	if err != nil {
 		fmt.Println("远程调用错误", err)
-		return nil
+		return nil, err
 	}
 
-	return changeVideo(resp.VideoList)
+	return changeVideo(resp.VideoList), nil
 
 }
 func changeVideo(videos []*frompublish.Video) []*proto.Video {
