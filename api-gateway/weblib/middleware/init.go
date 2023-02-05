@@ -9,27 +9,7 @@ func InitMiddleware(serviceMap map[string]interface{}) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		// 将实例存在gin.Keys中
 		context.Keys = make(map[string]interface{})
-		//	fmt.Printf("进入了init方法，service[0]=")
-		//	fmt.Println(service[0])
 		context.Keys = serviceMap
-		//context.Keys["feedService"] = service[2]
-		//		context.Keys["taskService"] = service[1]
 		context.Next()
 	}
 }
-
-//// 错误处理中间件
-//func ErrorMiddleware() gin.HandlerFunc {
-//	return func(context *gin.Context) {
-//		defer func() {
-//			if r := recover(); r != nil {
-//				context.JSON(200, gin.H{
-//					"code": 404,
-//					"msg":  fmt.Sprintf("%s", r),
-//				})
-//				context.Abort()
-//			}
-//		}()
-//		context.Next()
-//	}
-//}

@@ -2,21 +2,27 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"time"
 	"user/model"
-	"user/rpc"
+	"user/rpc_server"
 	"user/services"
 	"user/utils"
 )
 
+type UserService struct {
+}
+
 /**
-用户登录service层
+用户登录，service层，
+req:用户名，密码
+resp:
 */
 func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequest, resp *services.DouyinUserLoginResponse) error {
-	fmt.Println("进入登录")
+	//获取输入的用户名和密码
 	username := req.Username
 	password := req.Password
+
+	//判断用户名和密码是否为空
 	if username == "" || password == "" {
 		resp.StatusCode = -1
 		resp.StatusMsg = "用户名或密码不能为空"
@@ -25,14 +31,14 @@ func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequ
 		return nil
 	}
 
+	//调用数据库方法，查找是否有这个用户名的实体
 	user, err := model.NewUserDaoInstance().FindUserByName(username)
 	if err != nil {
-		panic("调用UserDao的FindUserByName方法，根据用户名查询User失败")
 		return err
 	}
 
+	//判断密码是否正确
 	if utils.Sha256(password) != user.Password {
-		fmt.Println("用户名或密码错误")
 		resp.StatusCode = -1
 		resp.StatusMsg = "用户名或密码错误"
 		resp.UserId = -1
@@ -40,22 +46,25 @@ func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequ
 		return nil
 	}
 
+	//将返回值设置在resp中，token在网关签发
 	resp.StatusCode = 0
 	resp.StatusMsg = "登录成功"
 	resp.UserId = user.UserId
-	resp.Token = ""
 	return nil
 }
 
 /**
 注册 service层
+req:用户名，密码
+resp:新生成的userId，
 */
+//TODO 有查询是否有用户和插入数据，最好做个事务，防止有同名用户
 func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegisterRequest, resp *services.DouyinUserRegisterResponse) error {
-	fmt.Println("进入注册")
-	//查询用户名，没有错误（能查到）
+	//在req中获取用户名和密码
 	username := req.Username
 	password := req.Password
 
+	//用户名和密码为空，返回
 	if username == "" || password == "" {
 		resp.StatusCode = -1
 		resp.StatusMsg = "用户名或密码不能为空"
@@ -64,8 +73,8 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 		return nil
 	}
 
+	//调用数据库方法，查询是否有同名实体
 	if _, err := model.NewUserDaoInstance().FindUserByName(username); err == nil {
-		fmt.Println("用户名已经存在")
 		resp.StatusCode = -1
 		resp.StatusMsg = "用户名已经存在"
 		resp.UserId = -1
@@ -73,6 +82,7 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 		return nil
 	}
 
+	//创建一个dao层User实体
 	user := &model.User{
 		Name:           username,
 		Password:       utils.Sha256(password),
@@ -81,9 +91,9 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 		CreateAt:       time.Now(),
 	}
 
+	//调用数据库方法，创建一个新的User实体
 	_, err := model.NewUserDaoInstance().CreateUser(user)
 	if err != nil {
-		fmt.Println("创建用户失败")
 		resp.StatusCode = -1
 		resp.StatusMsg = "创建用户失败"
 		resp.UserId = -1
@@ -91,8 +101,10 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 		return err
 	}
 
+	//根据用户名，查询新用户的userId，作为返回值返回
 	user, _ = model.NewUserDaoInstance().FindUserByName(username)
 
+	//补充resp
 	resp.StatusCode = 0
 	resp.StatusMsg = "注册成功"
 	resp.UserId = user.UserId
@@ -102,58 +114,44 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 
 /**
 登录用户的详细信息 service层
+在登录后或注册后被调用，查看自己的信息。
+在刷视频的时候，点进作者头像调用，查看别人的信息。
+resp: token判断用户是否登录， userId，想要查询的用户的Id
 */
+//TODO，查出来的数据可以放在缓存里
 func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserRequest, resp *services.DouyinUserResponse) error {
-	var tokenUserIdConv int64
-	tokenUserIdConv = -1 //设置一下token解析出的id初始值，token是可选参数，如果没有解析出的token，值还是-1
-
-	if req.Token == "" {
-		//可能会有一些不需要登录，但是需要请求用户信息的服务调用，比如未登录刷视频查询用户信息的时候，token=""
-
-	} else {
-		//token有值，解析,解析后就可以看两个用户是否关注
-		tokenUserIdConv = rpc.GetIdByToken(req.Token)
-		fmt.Println(tokenUserIdConv)
+	if req.Token == "" { //如果传进来的直接是空，比如feed流可以无登录用户刷信息，video会调用到这里，可以不用调用rpc的token去解析，直接返回。
+		resp.StatusCode = -1
+		resp.StatusMsg = "登录失效，请重新登录"
+		resp.User = &services.User{}
+		return nil
 	}
 
-	userId := req.UserId //传入的参数
-	//tokenUserId := req.Token //token解析出来的userId
-	//
-	//if userId <= 0 || tokenUserId == "" {
-	//	resp.StatusCode = -1
-	//	resp.StatusMsg = "传入参数不全，不能为空"
-	//	resp.User = &services.User{}
-	//	return nil
-	//}
+	//解析token,从token解析出userId，能解析出的才能查询用户信息，否则要先登录
+	tokenUserIdConv, err := rpc_server.GetIdByToken(req.Token)
+	if err != nil {
+		resp.StatusCode = -1
+		resp.StatusMsg = "登录失效，请重新登录"
+		resp.User = &services.User{}
+		return nil
+	}
+	// 获得想要获取详细信息的userId
+	userId := req.UserId
 
-	//curUserId, err := strconv.ParseInt(currentUserId, 10, 64) //当前用户的id
-	//tokenUserIdConv, err := strconv.ParseInt(tokenUserId, 10, 64) //当前用户的id
-	//if err != nil {
-	//	resp.StatusCode = 1
-	//	resp.StatusMsg = "类型转换失败"
-	//	resp.User = &services.User{}
-	//	return err
-	//}
-
-	//2. 根据userId查询User
+	//根据userId查询User
 	user, err := model.NewUserDaoInstance().FindUserById(userId)
 	if err != nil {
 		resp.StatusCode = 1
 		resp.StatusMsg = "查找用户信息时发生异常"
-		resp.User = &services.User{}
 		return err
 	}
 
-	isFollow := false
-	//这里可以做成根据tokenUserIdConv和userId查找relation表，判断isFollow tokenUserIdConv代表了当前用户的id,userId代表了想查找的id
-	//如果当前用户查找的是自己的信息，那么是否关注的关系返回
 	////TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
-	if tokenUserIdConv != -1 {
-		//有token，查一下follow的关系
-		if _, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv); err == nil {
-			//当前用户关注了user_id用户
-			isFollow = true
-		}
+	isFollow, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv)
+	if err != nil {
+		resp.StatusCode = -1
+		resp.StatusMsg = "查询relation数据库，两人是否有关注关系的时候失败"
+		return err
 	}
 
 	resp.StatusCode = 0
@@ -162,6 +160,9 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 	return nil
 }
 
+/**
+构建视图层User
+*/
 func BuildProtoUser(item *model.User, isFollow bool) *services.User {
 	user := services.User{
 		Id:            item.UserId,

@@ -3,16 +3,18 @@ package handlers
 import (
 	"api-gateway/services/feed"
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"time"
 )
 
+//视频流
 func Feed(ginCtx *gin.Context) {
+	//数据绑定
 	var feedReq feed.DouyinFeedRequest
-	lastTime, _ := strconv.ParseInt(ginCtx.Query("latest_time"), 10, 64)
+	lastTime, err := strconv.ParseInt(ginCtx.Query("latest_time"), 10, 64)
+	PanicIfFeedError(err)
 	feedReq.LatestTime = lastTime
 	feedReq.Token = ginCtx.Query("token")
 
@@ -21,11 +23,10 @@ func Feed(ginCtx *gin.Context) {
 
 	// 从gin.Key中取出服务实例
 	feedService := ginCtx.Keys["feedService"].(feed.FeedService)
+	// 调用
 	feedResp, err := feedService.Feed(ctx, &feedReq)
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	PanicIfFeedError(err)
+	//返回
 	ginCtx.JSON(http.StatusOK, feed.DouyinFeedResponse{
 		StatusCode: feedResp.StatusCode,
 		StatusMsg:  feedResp.StatusMsg,

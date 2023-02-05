@@ -18,5 +18,4 @@ func (*ToVideoService) GetFavoriteStatus(ctx context.Context, in *proto.GetFavor
 	}
 	out.IsFavorite = status
 	return nil
-
 }

@@ -51,7 +51,7 @@ func (*FavoriteService) FavoriteList(ctx context.Context, in *proto.DouyinFavori
 	var videoIds []int64
 	videoIds = favmapper.GetVideoIds(id)
 	fmt.Println("videoIds==", videoIds)
-	resp, err := etcdInit.GetVideosByIds(videoIds)
+	resp, err := etcdInit.GetVideosByIds(videoIds, in.Token)
 	if err != nil {
 		fmt.Println("出错了，....")
 		out.StatusCode = 500

@@ -46,12 +46,10 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 	var videoResult []*proto.Video
 
 	if len(req.VideoId) == 0 {
-		fmt.Println("videoId列表没有数据")
 		resp.StatusCode = 0
 		resp.VideoList = videoResult
 		return nil
 	}
-	fmt.Println("进入方法了")
 	//调用数据库查video实体列表
 	videos, err := model.NewVideoDaoInstance().GetVideosByIds(req.VideoId)
 	if err != nil {
@@ -61,7 +59,7 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 	}
 
 	for _, video := range videos {
-		videoResult = append(videoResult, BuildProtoVideo(video))
+		videoResult = append(videoResult, BuildProtoVideo(video, req.Token))
 	}
 
 	resp.StatusCode = 0
@@ -72,25 +70,48 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 /**
 构造一个控制层Video对象
 */
-func BuildProtoVideo(item *model.Video) *proto.Video {
+func BuildProtoVideo(item *model.Video, token string) *proto.Video {
+	isFavorite := false
+	userId, err := rpc_server.GetIdByToken(token)
+	fmt.Println(userId)
+	//没有错误，说明token存在且有效，userId是解析出的当前用户id
+	if err == nil {
+		isFavorite, err = rpc_server.GetFavoriteStatus(item.VideoId, userId)
+		if err != nil {
+			fmt.Println("调用远程favorite服务失败,错误原因是：")
+			fmt.Println(err)
+			return &proto.Video{}
+		}
+	}
+
 	video := proto.Video{
 		Id:            item.VideoId,
-		Author:        BuildProtoUser(item.UserId),
+		Author:        BuildProtoUser(item.UserId, token),
 		PlayUrl:       item.PlayUrl,
 		CoverUrl:      item.CoverUrl,
 		FavoriteCount: item.FavoriteCount,
 		CommentCount:  item.CommentCount,
-		IsFavorite:    rpc_server.GetFavoriteStatus(item.VideoId, item.UserId),
+		IsFavorite:    isFavorite,
 		Title:         item.Title,
 	}
+
 	return &video
 }
 
 /**
 构造一个控制层User对象
 */
-func BuildProtoUser(item_id int64) *proto.User {
-	rpcUserInfo, _ := rpc_server.GetUserInfo(item_id, "")
+func BuildProtoUser(item_id int64, token string) *proto.User {
+	rpcUserInfo, err := rpc_server.GetUserInfo(item_id, token)
+	if err != nil {
+		fmt.Println("调用远程user服务出错了，错误是：")
+		fmt.Println(err)
+		return &proto.User{}
+	}
+	//如果是空，没登陆，返回的应该是默认值
+	if rpcUserInfo == nil {
+		return &proto.User{}
+	}
 	user := proto.User{
 		Id:            rpcUserInfo.Id,
 		Name:          rpcUserInfo.Name,
@@ -98,5 +119,6 @@ func BuildProtoUser(item_id int64) *proto.User {
 		FollowerCount: rpcUserInfo.FollowerCount,
 		IsFollow:      rpcUserInfo.IsFollow,
 	}
+
 	return &user
 }

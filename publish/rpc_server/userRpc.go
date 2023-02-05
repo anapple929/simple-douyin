@@ -4,18 +4,16 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro/v2"
-	"publish/etcd"
+	"publish/rpc_server/etcd"
 	userproto "publish/services/userproto"
 )
 
-func GetUserInfo(userId int64, token string) (userproto.User, error) {
-	//etcdReg := etcd.NewRegistry(
-	//	registry.Addrs("127.0.0.1:2379"),
-	//)
-
-	//userMicroService := micro.NewService(micro.Name("userService.client"), micro.Registry(etcdReg))
+/**
+调用user查询用户信息
+*/
+func GetUserInfo(userId int64, token string) (*userproto.User, error) {
 	userMicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
-	userService := userproto.NewUserService("rpcUserService", userMicroService.Client()) //client.DefaultClient
+	userService := userproto.NewUserService("rpcUserService", userMicroService.Client())
 
 	var req userproto.DouyinUserRequest
 
@@ -28,7 +26,7 @@ func GetUserInfo(userId int64, token string) (userproto.User, error) {
 		fmt.Println(err)
 	}
 
-	user := userproto.User{
+	user := &userproto.User{
 		Id:            resp.User.Id,
 		Name:          resp.User.Name,
 		FollowCount:   resp.User.FollowCount,

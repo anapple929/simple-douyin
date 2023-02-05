@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"tokenutils/service"
 )
@@ -18,8 +17,6 @@ type Claims struct {
 }
 
 func (*TokenService) GetIdByToken(ctx context.Context, req *service.GetIdByTokenRequest, out *service.GetIdByTokenResponse) error {
-	//进入了token解码函数
-	fmt.Println("进入了token解码函数")
 	token := req.UserToken
 	token = string(token)
 

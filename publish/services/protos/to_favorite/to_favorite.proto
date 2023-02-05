@@ -14,6 +14,7 @@ message UpdateFavoriteCount_response {
 
 message GetVideosByIds_request {
   repeated int64 video_id = 1; // 视频集合
+  string token = 2 ;
 }
 
 message GetVideosByIds_response {

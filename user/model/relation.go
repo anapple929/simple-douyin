@@ -30,15 +30,13 @@ func NewRelationDaoInstance() *RelationDao {
 }
 
 /**
-根据follower_id和followering_id，查找用户实体
+根据follower_id和followering_id，查找是否存在关系，返回bool值
 */
-func (d *UserDao) FindRelationById(followerId int64, followeringId int64) (*Relation, error) {
-	relation := Relation{FollowerId: followerId, FollowingId: followeringId}
-
-	result := DB.Where("follower_id = ? and following_id = ?", followerId, followeringId).First(&relation)
-	err := result.Error
+func (d *UserDao) FindRelationById(followerId int64, followeringId int64) (bool, error) {
+	var count int
+	err := DB.Model(Relation{}).Where("follower_id=? and following_id=?", followerId, followeringId).Count(&count).Error
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-	return &relation, err
+	return count == 1, nil
 }

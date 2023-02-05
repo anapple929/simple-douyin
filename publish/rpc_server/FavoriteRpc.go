@@ -4,18 +4,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro/v2"
-	"publish/etcd"
+	"publish/rpc_server/etcd"
 	services "publish/services/favorite_to_video_proto"
 )
 
-func GetFavoriteStatus(videoId int64, userId int64) bool {
-
+/**
+调用favorite服务，是否点赞接口
+*/
+func GetFavoriteStatus(videoId int64, userId int64) (bool, error) {
 	//// 服务调用实例
 	MicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
-	Service := services.NewToVideoService("rpcFavoriteService", MicroService.Client()) //client.DefaultClient
+	Service := services.NewToVideoService("rpcFavoriteService", MicroService.Client())
 
 	var req services.GetFavoriteStatus_Request
-	//fmt.Println("到这里了")
 
 	req.VideoId = videoId
 	req.UserId = userId
@@ -24,5 +25,5 @@ func GetFavoriteStatus(videoId int64, userId int64) bool {
 	if err != nil {
 		fmt.Println(err)
 	}
-	return resp.IsFavorite
+	return resp.IsFavorite, err
 }

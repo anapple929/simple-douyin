@@ -86,7 +86,6 @@ func (*VideoDao) AddFavoriteCount(videoId int64, cnt int32) {
 func (*VideoDao) ReduceFavoriteCount(videoId int64, cnt int32) {
 	err := DB.Model(Video{}).Where("video_id=?", videoId).Update("favorite_count", gorm.Expr("favorite_count-?", cnt)).Error
 	if err != nil {
-		//log.Error(err)
 	}
 }
 
@@ -104,6 +103,9 @@ func (d *VideoDao) FindVideoById(videoId int64) (*Video, error) {
 	return &video, err
 }
 
+/**
+根据视频id集，获取video实体集
+*/
 func (*VideoDao) GetVideosByIds(videoIds []int64) ([]*Video, error) {
 	var videos []*Video
 

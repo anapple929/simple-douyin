@@ -35,7 +35,7 @@ func CountAction(vid int64, count int32, actionType int32) bool {
 
 }
 
-func GetVideosByIds(vids []int64) ([]*proto.Video, error) {
+func GetVideosByIds(vids []int64, token string) ([]*proto.Video, error) {
 	//// 服务调用实例
 
 	MicroService := micro.NewService(micro.Registry(EtcdReg))
@@ -44,6 +44,7 @@ func GetVideosByIds(vids []int64) ([]*proto.Video, error) {
 	var req frompublish.GetVideosByIdsRequest
 
 	req.VideoId = vids
+	req.Token = token
 	resp, err := Service.GetVideosByIds(context.TODO(), &req)
 	if err != nil {
 		fmt.Println("远程调用错误", err)

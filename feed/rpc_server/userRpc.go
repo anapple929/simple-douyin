@@ -2,20 +2,18 @@ package rpc_server
 
 import (
 	"context"
-	etcdInit "feed/etcd"
+	"feed/rpc_server/etcd"
 	userproto "feed/services/userproto"
 	"fmt"
 	"github.com/micro/go-micro/v2"
 )
 
-func GetUserInfo(userId int64, token string) userproto.User {
+func GetUserInfo(userId int64, token string) (*userproto.User, error) {
 
 	userMicroService := micro.NewService(micro.Registry(etcdInit.EtcdReg))
-
-	userService := userproto.NewUserService("rpcUserService", userMicroService.Client()) //client.DefaultClient
+	userService := userproto.NewUserService("rpcUserService", userMicroService.Client())
 
 	var req userproto.DouyinUserRequest
-
 	req.UserId = userId
 	req.Token = token
 
@@ -25,12 +23,12 @@ func GetUserInfo(userId int64, token string) userproto.User {
 		fmt.Println(err)
 	}
 
-	user := userproto.User{
+	user := &userproto.User{
 		Id:            resp.User.Id,
 		Name:          resp.User.Name,
 		FollowCount:   resp.User.FollowCount,
 		FollowerCount: resp.User.FollowerCount,
 		IsFollow:      resp.User.IsFollow,
 	}
-	return user
+	return user, err
 }

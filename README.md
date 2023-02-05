@@ -25,7 +25,7 @@ gorm+gin+go-micro+mysql 极简版抖音
 
 ---
 ### 运行
-1. fork 项目到自己的仓库，随便找一个本地文件夹，在当前目录下`git clone XXX`
+1. `git clone XXX`
 2. 在 goland 中打开，进入每个微服务`go mod tidy`，
 3. 将 etcd 运行起来
 4. 运行每个微服务的main.go
@@ -38,6 +38,8 @@ gorm+gin+go-micro+mysql 极简版抖音
 * /douyin/publish/action/
 * /douyin/publish/list/
 * /douyin/feed/
+* /douyin/favorite/action/
+* /douyin/favorite/list/
 ---
 ### 注意
 测试视频上传功能时，电脑要下载ffmpeg，并配置到环境变量中。
