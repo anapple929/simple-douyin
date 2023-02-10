@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api-gateway/services/comment"
 	"api-gateway/services/fav"
 	"api-gateway/services/feed"
 	"api-gateway/services/publish"
@@ -41,9 +42,6 @@ func main() {
 	)
 	//点赞服务实例
 	favoriteService := fav.NewFavoriteService("rpcFavoriteService", favoriteMicroService.Client())
-
-	serviceMap := make(map[string]interface{})
-
 	// feed视频流
 	feedMicroService := micro.NewService(
 		micro.Name("feedService.client"),
@@ -52,10 +50,20 @@ func main() {
 	// 视频流服务调用实例
 	feedService := feed.NewFeedService("rpcFeedService", feedMicroService.Client())
 
+	// feed视频流
+	commentMicroService := micro.NewService(
+		micro.Name("commentService.client"),
+		micro.WrapClient(wrappers.NewCommentWrapper),
+	)
+	// 视频流服务调用实例
+	commentService := comment.NewCommentService("rpcCommentService", commentMicroService.Client())
+
+	serviceMap := make(map[string]interface{})
 	serviceMap["userService"] = userService
 	serviceMap["publishService"] = publishService
 	serviceMap["feedService"] = feedService
 	serviceMap["favoriteService"] = favoriteService
+	serviceMap["commentService"] = commentService
 
 	//创建微服务实例，使用gin暴露http接口并注册到etcd
 	server := web.NewService(

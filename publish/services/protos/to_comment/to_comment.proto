@@ -1,0 +1,18 @@
+syntax = "proto3";
+package services;
+option go_package = "../;service";
+
+message UpdateCommentCount_request {
+  int64 video_id = 1; // 视频id
+  int32 count = 2;// 增加的数量
+  int32 type = 3;// 1是增加，2是减少
+}
+
+message UpdateCommentCount_response {
+  int32 status_code = 1; //响应，成功是0，失败是其他值
+}
+
+service ToCommentService{
+  rpc UpdateCommentCount(UpdateCommentCount_request) returns (UpdateCommentCount_response);//增加减少评论数
+}
+

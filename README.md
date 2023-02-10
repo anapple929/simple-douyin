@@ -5,10 +5,11 @@ gorm+gin+go-micro+mysql 极简版抖音
 * 注册中心:etcd
 * 网关 - api-gateway 4000
 * 用户微服务 - user 8082
-* token 8089
+* token 8085
 * publish 8083
 * feed 8084
 * favorite 8086
+* comment 8087
 ---
 ### mysql 
 43.138.51.56:3306  

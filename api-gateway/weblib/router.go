@@ -39,6 +39,13 @@ func NewRouter(service map[string]interface{}) *gin.Engine {
 			fav.POST("/action/", handlers.FavoriteAction)
 			fav.GET("/list/", handlers.FavoriteList)
 		}
+
+		//comment
+		comment := v1.Group("/comment")
+		{
+			comment.POST("/action/", handlers.CommentAction)
+			comment.GET("/list/", handlers.CommentList)
+		}
 	}
 	return ginRouter
 }
