@@ -1,12 +1,14 @@
 package model
 
 import (
+	"fmt"
+	"github.com/jinzhu/gorm"
 	"sync"
 	"time"
 )
 
 type User struct {
-	UserId         int64  `gorm:"primaryKey"`
+	UserId         int64  `gorm:"primary_key"`
 	Name           string `gorm:"default:(-)"`
 	FollowingCount int64  `gorm:"default:(-)"`
 	FollowerCount  int64  `gorm:"default:(-)"`
@@ -74,4 +76,57 @@ func (d *UserDao) FindUserById(id int64) (*User, error) {
 		return nil, err
 	}
 	return &user, err
+}
+
+/**
+根据userId，给user表的follower字段增加cnt
+*/
+func (*UserDao) AddFollowerCount(userId int64, cnt int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("follower_count", gorm.Expr("follower_count+?", cnt)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据userId，给user表的follower字段减少cnt
+*/
+func (*UserDao) ReduceFollowerCount(userId int64, cnt int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("follower_count", gorm.Expr("follower_count-?", cnt)).Error
+	if err != nil {
+	}
+}
+
+/**
+根据userId，给user表的following字段增加count
+*/
+func (*UserDao) AddFollowingCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("following_count", gorm.Expr("following_count+?", count)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据userId，给user表的following字段减少cnt
+*/
+func (*UserDao) ReduceFollowingCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("following_count", gorm.Expr("following_count-?", count)).Error
+	if err != nil {
+	}
+}
+
+/**
+根据用户id集，获取user实体集
+*/
+func (*UserDao) GetUsersByIds(userIds []int64) ([]*User, error) {
+	var users []*User
+
+	err := DB.Where("user_id IN (?)", userIds).Find(&users).Error
+	if err != nil {
+		fmt.Println("model层查询User列表失败")
+		return nil, err
+	}
+
+	return users, nil
 }

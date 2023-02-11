@@ -4,6 +4,7 @@ import (
 	"comment/model"
 	"comment/rpc_server"
 	proto "comment/service"
+	usersproto "comment/service/to_relation"
 	userproto "comment/service/userproto"
 	"context"
 	"fmt"
@@ -53,12 +54,19 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 		out.StatusMsg = "评论成功"
 		out.StatusCode = 0
 		out.Comment = ChangeComment(comment, user)
-		fmt.Println(out.Comment)
-
 		return nil
 
 	} else if in.ActionType == 2 {
 		//如果是删除消息，将拿到的参数调用model中的数据库方法，删除记录
+		//先判断一下删评论的人是不是删的自己的评论，如果不是，直接失败
+		//通过commentId查询userId
+		commentUserId, _ := model.NewCommentDaoInstance().GetUserIdByCommentId(in.CommentId)
+		if userId != commentUserId {
+			out.StatusMsg = "不能删除别人的评论"
+			out.StatusCode = 0
+			out.Comment = ChangeComment(comment, user)
+			return nil
+		}
 		err := model.NewCommentDaoInstance().DeleteCommentById(in.CommentId)
 		if err != nil {
 			out.StatusCode = -1
@@ -84,12 +92,27 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 评论列表
 */
 func (*CommentService) CommentList(ctx context.Context, in *proto.DouyinCommentListRequest, out *proto.DouyinCommentListResponse) error {
-	fmt.Println("comment service层 commentList")
-
+	//存评论列表
 	var commentResult []*proto.Comment
+	//拿到userIds集合，调用usersinfo方法，查一批User实体
+	var userIds []int64
+	//调用数据库方法
 	comments, _ := model.NewCommentDaoInstance().QueryComment(in.VideoId)
+
 	for _, comment := range comments {
-		commentResult = append(commentResult, BuildProtoComment(comment, in.Token))
+		userIds = append(userIds, comment.UserId)
+	}
+	fmt.Println(userIds)
+	//调用usersinfo方法，查一批User实体
+	users, _ := rpc_server.GetUsersInfo(userIds, "")
+	fmt.Println(users)
+	for _, comment := range comments {
+		for _, user := range users {
+			if user.Id == comment.UserId {
+				commentResult = append(commentResult, BuildProtoComment(comment, user))
+				break
+			}
+		}
 	}
 
 	out.CommentList = commentResult
@@ -99,34 +122,23 @@ func (*CommentService) CommentList(ctx context.Context, in *proto.DouyinCommentL
 	return nil
 }
 
-func BuildProtoComment(comment *model.Comment, token string) *proto.Comment {
+func BuildProtoComment(comment *model.Comment, user *usersproto.User) *proto.Comment {
 	return &proto.Comment{
 		Id:         comment.CommentId,
-		User:       BuildProtoUser(comment.UserId, token),
+		User:       BuildProtoUser(user),
 		Content:    comment.Content,
-		CreateDate: comment.CreateAt.String(),
+		CreateDate: comment.CreateAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
-func BuildProtoUser(item_id int64, token string) *proto.User {
-	rpcUserInfo, err := rpc_server.GetUserInfo(item_id, token)
-	if err != nil {
-		fmt.Println("调用远程user服务失败,错误原因是：")
-		fmt.Println(err)
-		return &proto.User{}
+func BuildProtoUser(user *usersproto.User) *proto.User {
+	return &proto.User{
+		Id:            user.Id,
+		Name:          user.Name,
+		FollowCount:   user.FollowCount,
+		FollowerCount: user.FollowerCount,
+		IsFollow:      user.IsFollow,
 	}
-	//如果是空，没登陆，返回的应该是默认值
-	if rpcUserInfo == nil {
-		return &proto.User{}
-	}
-	user := proto.User{
-		Id:            rpcUserInfo.Id,
-		Name:          rpcUserInfo.Name,
-		FollowCount:   rpcUserInfo.FollowCount,
-		FollowerCount: rpcUserInfo.FollowerCount,
-		IsFollow:      rpcUserInfo.IsFollow,
-	}
-	return &user
 }
 
 func ChangeUser(user *userproto.User) *proto.User {
@@ -143,6 +155,6 @@ func ChangeComment(comment *model.Comment, user *userproto.User) *proto.Comment 
 		Id:         comment.CommentId,
 		User:       ChangeUser(user),
 		Content:    comment.Content,
-		CreateDate: comment.CreateAt.String(),
+		CreateDate: comment.CreateAt.Format("2006-01-02 15:04:05"),
 	}
 }

@@ -6,7 +6,9 @@ import (
 	"github.com/micro/go-micro/v2/registry/etcd"
 	"user/conf"
 	"user/core"
+	to_relation "user/core/to_relation"
 	"user/services"
+	to_relation_proto "user/services/to_relation"
 )
 
 func main() {
@@ -26,6 +28,7 @@ func main() {
 	microService.Init()
 	// 服务注册
 	_ = services.RegisterUserServiceHandler(microService.Server(), new(core.UserService))
+	_ = to_relation_proto.RegisterToRelationServiceHandler(microService.Server(), new(to_relation.ToRelationService))
 	// 启动微服务
 	_ = microService.Run()
 }

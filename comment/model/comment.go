@@ -8,12 +8,12 @@ import (
 )
 
 type Comment struct {
-	CommentId int64  `gorm:"primaryKey"`
+	CommentId int64  `gorm:"primary_key"`
 	UserId    int64  `gorm:"default:(-)"`
 	VideoId   int64  `gorm:"default:(-)"`
 	Content   string `gorm:"default:(-)"`
 	CreateAt  time.Time
-	DeleteAt  gorm.DeletedAt
+	DeletedAt gorm.DeletedAt
 }
 
 func (Comment) TableName() string {
@@ -52,6 +52,8 @@ func (*CommentDao) CreateComment(comment *Comment) (*Comment, error) {
 		return nil, result.Error
 	}
 
+	fmt.Println("model层的输出")
+	//fmt.Println(comment.ID)
 	return comment, nil
 }
 
@@ -63,12 +65,22 @@ func (*CommentDao) QueryComment(videoId int64) ([]*Comment, error) {
 	var comment []*Comment
 
 	err := DB.Where("video_id = ?", videoId).Find(&comment).Error
+
 	if err != nil {
 		fmt.Println("查询Video列表失败")
 		return nil, err
 	}
 
 	return comment, nil
+}
+
+/**
+通过commentId拿到comment实体，从实体中拿到userId
+*/
+func (*CommentDao) GetUserIdByCommentId(id int64) (int64, error) {
+	comment := Comment{CommentId: id}
+	result := DB.Where("comment_id = ?", id).First(&comment).Error
+	return comment.UserId, result
 }
 
 var commentDao *CommentDao

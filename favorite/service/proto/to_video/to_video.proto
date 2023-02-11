@@ -8,8 +8,25 @@ message GetFavoriteStatus_Request{
 
 message GetFavoriteStatus_Response{
   bool isFavorite=1;
-
 }
+
+message GetFavoritesStatus_Request{
+  repeated FavoriteStatus favoriteStatus = 1;
+  string token = 2;
+}
+
+message GetFavoritesStatus_Response{
+  int64 status_code = 1;
+  repeated FavoriteStatus isFavorite=2;
+}
+
+message FavoriteStatus {
+  int64 user_id=1; //发起关注的人
+  int64 video_id=2; //被关注的人
+  bool isFavorite=3; //是否关注
+}
+
 service  ToVideoService{
   rpc GetFavoriteStatus(GetFavoriteStatus_Request)returns(GetFavoriteStatus_Response);
+  rpc GetFavoritesStatus(GetFavoritesStatus_Request) returns (GetFavoritesStatus_Response);
 }

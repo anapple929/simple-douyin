@@ -4,6 +4,7 @@ import (
 	"errors"
 	etcdInit "favorite/etcd"
 	"favorite/model"
+	proto "favorite/service"
 	"fmt"
 	"sync"
 )
@@ -70,6 +71,19 @@ func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) e
 		return errors.New("Mapper层Count维护失败")
 	}
 	return nil
+}
+
+func (m FavoriteMapper) GetFavoritesStatus(isFavorites []*proto.FavoriteStatus) ([]*proto.FavoriteStatus, error) {
+	db := model.DB
+	var result []*proto.FavoriteStatus
+	var count int
+
+	for _, isFavorite := range isFavorites {
+		_ = db.Model(&model.Favorite{}).Where("user_id=? and video_id=?", isFavorite.UserId, isFavorite.VideoId).Count(&count).Error
+		result = append(result, &proto.FavoriteStatus{IsFavorite: count > 0, UserId: isFavorite.UserId, VideoId: isFavorite.VideoId})
+	}
+	fmt.Println(result)
+	return result, nil
 }
 
 var favoriteMapper *FavoriteMapper

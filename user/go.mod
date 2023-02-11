@@ -83,3 +83,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.0.1-2019.2.3 // indirect
 )
+
+replace github.com/golang/protobuf => github.com/golang/protobuf v1.4.3
+
+replace google.golang.org/protobuf => google.golang.org/protobuf v1.22.0

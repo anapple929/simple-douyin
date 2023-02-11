@@ -1,0 +1,34 @@
+syntax = "proto3";
+package services;
+option go_package = "../;proto";
+
+message GetRelationStatus_Request{
+  int64 following_id=1; //发起关注的人
+  int64 follower_id=2; //被关注的人
+}
+
+message GetRelationStatus_Response{
+  int64 status_code = 1;
+  bool isFollow = 2;
+}
+
+message GetRelationsStatus_Request{
+  repeated RelationStatus relationStatus = 1;
+  string token = 2;
+}
+
+message GetRelationsStatus_Response{
+  int64 status_code = 1;
+  repeated RelationStatus isFollow=2;
+}
+
+message RelationStatus {
+  int64 following_id=1; //发起关注的人
+  int64 follower_id=2; //被关注的人
+  bool isFollow=3; //是否关注
+}
+
+service  ToUserService{
+  rpc GetRelationStatus(GetRelationStatus_Request) returns (GetRelationStatus_Response);
+  rpc GetRelationsStatus(GetRelationsStatus_Request) returns (GetRelationsStatus_Response);
+}

@@ -3,6 +3,7 @@ package model
 import (
 	"sync"
 	"time"
+	to_user "user/services/from_relation"
 )
 
 type Relation struct {
@@ -16,6 +17,15 @@ func (Relation) TableName() string {
 }
 
 type RelationDao struct {
+}
+
+func (RelationDao) GetRelationsByIds(relationStatus []*to_user.RelationStatus) ([]*to_user.RelationStatus, error) {
+	var result []*to_user.RelationStatus
+	//调用relation数据库，查出relationStatus每一项的isFollow，封装成result返回.
+
+	//查数据库
+	result = relationStatus
+	return result, nil
 }
 
 var relationDao *RelationDao
