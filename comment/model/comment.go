@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+	"gorm.io/gorm"
 	"sync"
 	"time"
 )
@@ -11,7 +13,7 @@ type Comment struct {
 	VideoId   int64  `gorm:"default:(-)"`
 	Content   string `gorm:"default:(-)"`
 	CreateAt  time.Time
-	DeleteAt  time.Time
+	DeleteAt  gorm.DeletedAt
 }
 
 func (Comment) TableName() string {
@@ -21,49 +23,52 @@ func (Comment) TableName() string {
 type CommentDao struct {
 }
 
-/**
+/*
+*
 根据commentId删除信息，软删除，因为有deleteat字段,返回这个操作有错误吗
 */
 func (*CommentDao) DeleteCommentById(commentId int64) error {
+
+	err := DB.Where("comment_id = ?", commentId).Delete(&Comment{}).Error
+
+	/*err := DB.Delete(commentId).Error*/
+
+	if err != nil {
+		fmt.Printf("删除失败", err)
+	}
+
 	return nil
 }
 
-/**
+/*
+*
 创建一条Comment,返回创建的comment和error信息
 */
 func (*CommentDao) CreateComment(comment *Comment) (*Comment, error) {
 	//和数据库进行操作
-	return &Comment{
-		CommentId: 1,
-		UserId:    51,
-		Content:   "第一条测试数据",
-		VideoId:   40,
-		CreateAt:  time.Now(),
-	}, nil
+	result := DB.Create(&comment)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return comment, nil
 }
 
-/**
+/*
+*
 传入videoId，查出comments
 */
-func (*CommentDao) QueryComment(videoId int64) []*Comment {
-	return []*Comment{
-		{
-			CommentId: 1,
-			UserId:    51,
-			Content:   "第一条测试数据",
-			VideoId:   videoId,
-			CreateAt:  time.Now(),
-			DeleteAt:  time.Now(),
-		},
-		{
-			CommentId: 2,
-			UserId:    52,
-			Content:   "第2条测试数据",
-			VideoId:   videoId,
-			CreateAt:  time.Now(),
-			DeleteAt:  time.Now(),
-		},
+func (*CommentDao) QueryComment(videoId int64) ([]*Comment, error) {
+	var comment []*Comment
+
+	err := DB.Where("video_id = ?", videoId).Find(&comment).Error
+	if err != nil {
+		fmt.Println("查询Video列表失败")
+		return nil, err
 	}
+
+	return comment, nil
 }
 
 var commentDao *CommentDao

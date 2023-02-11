@@ -7,22 +7,17 @@ import (
 	userproto "comment/service/userproto"
 	"context"
 	"fmt"
+	"time"
 )
 
 type CommentService struct {
 }
 
-/**
+/*
+*
 评论
 */
 func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommentActionRequest, out *proto.DouyinCommentActionResponse) error {
-	fmt.Println("comment service层 commentAction")
-	fmt.Println("拿到的参数是")
-	fmt.Println(in.CommentId)
-	fmt.Println(in.ActionType)
-	fmt.Println(in.Token)
-	fmt.Println(in.CommentText)
-	fmt.Println(in.VideoId)
 	//1.判断一下token失效了吗，调用rpc_server的 GetIdByToken 方法，从token中解析出userId
 	//解析token
 	if in.Token == "" {
@@ -40,10 +35,18 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 	user, _ := rpc_server.GetUserInfo(userId, in.Token)
 	fmt.Println(user) //输出看一下，查出来了吗
 
+	//创建comment实体
+	comment := &model.Comment{
+		UserId:   userId,
+		Content:  in.CommentText,
+		VideoId:  in.VideoId,
+		CreateAt: time.Now(),
+	}
+
 	//判断一下actionType的类型 1 发布消息 2 删除消息， 做一个if判断
 	if in.ActionType == 1 {
 		//如果是发布消息，将拿到的参数调用model中的数据库方法，将数据传入数据库
-		comment, _ := model.NewCommentDaoInstance().CreateComment(&model.Comment{})
+		comment, _ := model.NewCommentDaoInstance().CreateComment(comment)
 		//调用rpc_server的CommentCountAction，增加发布数
 		rpc_server.CountAction(in.VideoId, 1, in.ActionType)
 
@@ -76,14 +79,15 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 	return nil
 }
 
-/**
+/*
+*
 评论列表
 */
 func (*CommentService) CommentList(ctx context.Context, in *proto.DouyinCommentListRequest, out *proto.DouyinCommentListResponse) error {
 	fmt.Println("comment service层 commentList")
 
 	var commentResult []*proto.Comment
-	comments := model.NewCommentDaoInstance().QueryComment(in.VideoId)
+	comments, _ := model.NewCommentDaoInstance().QueryComment(in.VideoId)
 	for _, comment := range comments {
 		commentResult = append(commentResult, BuildProtoComment(comment, in.Token))
 	}
