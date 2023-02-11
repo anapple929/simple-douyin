@@ -69,11 +69,6 @@ func (ToRelationService) UpdateFollowingCount(ctx context.Context, req *proto.Up
 根据userId列表，获取User列表
 */
 func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersByIdsRequest, resp *proto.GetUsersByIdsResponse) error {
-	//if req.Token == "" { //如果传进来的直接是空，比如feed流可以无登录用户刷信息，video会调用到这里，可以不用调用rpc的token去解析，直接返回。
-	//	resp.StatusCode = -1
-	//	resp.UserList = []*proto.User{}
-	//	return nil
-	//}
 	var tokenUserIdConv int64
 	tokenUserIdConv = -1
 	//解析token,从token解析出userId，能解析出的才能查询用户信息，否则要先登录

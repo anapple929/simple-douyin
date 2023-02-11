@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"github.com/gofrs/uuid"
 	"publish/model"
 	"publish/rpc_server"
 	"publish/services"
@@ -26,17 +27,27 @@ func (*PublishService) Publish(ctx context.Context, req *services.DouyinPublishA
 	}
 
 	title := req.Title
-	//上传视频
-	videoUrl := utils.UploadVideo(req.Data)
+	//生成视频地址
+	videoUUID, _ := uuid.NewV4()
+	videoDir := time.Now().Format("2006-01-02") + "/" + videoUUID.String() + ".mp4"
+	videoUrl := "https://" + "simple-douyin-1122233" + ".oss-cn-hangzhou.aliyuncs.com/" + videoDir
 	fmt.Println("上传视频地址是" + videoUrl)
-
-	//获取封面
-	coverBytes, _ := utils.ReadFrameAsJpeg(videoUrl)
-
-	//上传封面
-	coverUrl := utils.UploadPicture(coverBytes)
+	//生成图片地址
+	pictureUUID, _ := uuid.NewV4()
+	pictureDir := time.Now().Format("2006-01-02") + "/" + pictureUUID.String() + ".jpg"
+	coverUrl := "https://" + "simple-douyin-1122233" + ".oss-cn-hangzhou.aliyuncs.com/" + pictureDir
 	fmt.Println("上传视频封面的地址是" + coverUrl)
 
+	//开启协程上传
+	go func() {
+		//上传视频
+		_ = utils.UploadVideo(videoDir, req.Data)
+		//time.Sleep(2*time.Second)
+		//获取封面
+		coverBytes, _ := utils.ReadFrameAsJpeg(videoUrl)
+		//上传封面
+		_ = utils.UploadPicture(pictureDir, coverBytes)
+	}()
 	//构造video Dao模型
 	video := &model.Video{
 		UserId:        tokenUserIdConv,
@@ -84,11 +95,6 @@ func (*PublishService) PublishList(ctx context.Context, req *services.DouyinPubl
 		resp.StatusMsg = "在video表查视频失败了"
 		return err
 	}
-
-	//遍历实体Video，封装到VideoResult中
-	//for _, video := range videos {
-	//	videoResult = append(videoResult, BuildProtoVideo(video, req.Token))
-	//}
 
 	//拿到userIds集合，调用usersinfo方法，查一批User实体
 	var userIds []int64
