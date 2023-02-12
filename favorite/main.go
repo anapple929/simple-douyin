@@ -5,11 +5,13 @@ import (
 	"favorite/core/tovideo"
 	etcdInit "favorite/etcd"
 	proto "favorite/service"
+	utils "favorite/utils/redis"
 	"github.com/micro/go-micro/v2"
 )
 
 func main() {
-
+	//redis
+	utils.InitRedis()
 	etcdReg := etcdInit.EtcdReg
 	// 得到一个微服务实例
 	microService := micro.NewService(
