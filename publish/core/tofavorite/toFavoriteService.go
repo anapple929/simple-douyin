@@ -2,12 +2,17 @@ package tofavorite
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
 	"publish/model"
 	"publish/rpc_server"
 	"publish/services/favorite_to_video_proto"
 	proto "publish/services/to_favorite"
 	usersproto "publish/services/to_relation"
+	redis "publish/utils"
+	"strconv"
+	"sync"
 )
 
 type ToFavoriteService struct {
@@ -62,17 +67,49 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 		resp.VideoList = videoResult
 		return nil
 	}
+
+	var searchIds []int64          //保存从redis没命中的videoId,统一去mysql中查一次
+	var videosRedis []*model.Video //从redis查到的video实体
+	//把能从redis中查到的videoId先都给查到，查不到的放到searchIds中，在数据库中统一给查出来
+	for _, videoIdSearchRedis := range req.VideoId {
+		count, err := redis.RdbVideoId.Exists(redis.Ctx, strconv.FormatInt(videoIdSearchRedis, 10)).Result()
+		if err != nil {
+			log.Println(err)
+		}
+
+		if count > 0 {
+			var video *model.Video //一个临时变量，存解构后的video实体
+			//缓存里有
+			//redis，先从redis通过videoId查询video实体
+			userString, err := redis.RdbVideoId.Get(redis.Ctx, strconv.FormatInt(videoIdSearchRedis, 10)).Result()
+			if err != nil { //若查询缓存出错，则打印log
+				//return 0, err
+				log.Println("调用redis查询videoId对应的信息出错", err)
+			}
+			json.Unmarshal([]byte(userString), &video)
+			videosRedis = append(videosRedis, video)
+		} else {
+			//没查到，进入searchIds数组
+			searchIds = append(searchIds, videoIdSearchRedis)
+		}
+	}
+
 	//调用数据库查video实体列表
-	videos, err := model.NewVideoDaoInstance().GetVideosByIds(req.VideoId)
+	videos, err := model.NewVideoDaoInstance().GetVideosByIds(searchIds)
+	//把mysql查到的videos数据存到redis中
+	for _, video := range videos {
+		videoValue, _ := json.Marshal(&video)
+		_ = redis.RdbVideoId.Set(redis.Ctx, strconv.FormatInt(video.UserId, 10), videoValue, 0).Err()
+	}
+
 	if err != nil {
 		resp.StatusCode = -1
 		resp.VideoList = nil
 		return errors.New("调用数据库出错！")
 	}
 
-	//for _, video := range videos {
-	//	videoResult = append(videoResult, BuildProtoVideo(video, req.Token))
-	//}
+	//合并从mysql查到的users和redis查到的usersRedis
+	videos = append(videos, videosRedis...)
 
 	//拿到userIds集合，调用usersinfo方法，查一批User实体
 	var userIds []int64
@@ -83,9 +120,26 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 		//封装isFavorites，作为参数，调用favorite微服务的远程接口
 		favoriteStatus = append(favoriteStatus, &favorite_to_video_proto.FavoriteStatus{UserId: user_id, VideoId: video.VideoId, IsFavorite: false})
 	}
-	//调用usersinfo方法，查一批User实体
-	users, err := rpc_server.GetUsersInfo(userIds, req.Token)
-	isFavorites, _ := rpc_server.GetFavoritesStatus(favoriteStatus)
+
+	//用协程去调用两个微服务，批量查询user实体和favoriteStatus实体
+	var users []*usersproto.User
+	var isFavorites []*favorite_to_video_proto.FavoriteStatus
+
+	var wg sync.WaitGroup
+	wg.Add(2) //等待两个协程都拿到数据了，再往下走
+
+	go func() {
+		defer wg.Done()
+		//调用usersinfo方法，查一批User实体
+		users, err = rpc_server.GetUsersInfo(userIds, req.Token)
+	}()
+
+	go func() {
+		defer wg.Done()
+		//调用FavoritesStatus方法，查一批FavoriteStatus实体
+		isFavorites, _ = rpc_server.GetFavoritesStatus(favoriteStatus)
+	}()
+	wg.Wait()
 
 	//如果查到的users的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
 	//如果查到的isfavorite的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
@@ -134,60 +188,3 @@ func BuildProtoUser(user *usersproto.User) *proto.User {
 		IsFollow:      user.IsFollow,
 	}
 }
-
-//
-///**
-//构造一个控制层Video对象
-//*/
-//func BuildProtoVideo(item *model.Video, token string) *proto.Video {
-//	isFavorite := false
-//	userId, err := rpc_server.GetIdByToken(token)
-//	fmt.Println(userId)
-//	//没有错误，说明token存在且有效，userId是解析出的当前用户id
-//	if err == nil {
-//		isFavorite, err = rpc_server.GetFavoriteStatus(item.VideoId, userId)
-//		if err != nil {
-//			fmt.Println("调用远程favorite服务失败,错误原因是：")
-//			fmt.Println(err)
-//			return &proto.Video{}
-//		}
-//	}
-//
-//	video := proto.Video{
-//		Id:            item.VideoId,
-//		Author:        BuildProtoUser(item.UserId, token),
-//		PlayUrl:       item.PlayUrl,
-//		CoverUrl:      item.CoverUrl,
-//		FavoriteCount: item.FavoriteCount,
-//		CommentCount:  item.CommentCount,
-//		IsFavorite:    isFavorite,
-//		Title:         item.Title,
-//	}
-//
-//	return &video
-//}
-//
-///**
-//构造一个控制层User对象
-//*/
-//func BuildProtoUser(item_id int64, token string) *proto.User {
-//	rpcUserInfo, err := rpc_server.GetUserInfo(item_id, token)
-//	if err != nil {
-//		fmt.Println("调用远程user服务出错了，错误是：")
-//		fmt.Println(err)
-//		return &proto.User{}
-//	}
-//	//如果是空，没登陆，返回的应该是默认值
-//	if rpcUserInfo == nil {
-//		return &proto.User{}
-//	}
-//	user := proto.User{
-//		Id:            rpcUserInfo.Id,
-//		Name:          rpcUserInfo.Name,
-//		FollowCount:   rpcUserInfo.FollowCount,
-//		FollowerCount: rpcUserInfo.FollowerCount,
-//		IsFollow:      rpcUserInfo.IsFollow,
-//	}
-//
-//	return &user
-//}

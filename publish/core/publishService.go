@@ -10,6 +10,7 @@ import (
 	"publish/services/favorite_to_video_proto"
 	usersproto "publish/services/to_relation"
 	utils "publish/utils"
+	"sync"
 	"time"
 )
 
@@ -105,9 +106,26 @@ func (*PublishService) PublishList(ctx context.Context, req *services.DouyinPubl
 		//封装isFavorites，作为参数，调用favorite微服务的远程接口
 		favoriteStatus = append(favoriteStatus, &favorite_to_video_proto.FavoriteStatus{UserId: user_id, VideoId: video.VideoId, IsFavorite: false})
 	}
-	//调用usersinfo方法，查一批User实体
-	users, err := rpc_server.GetUsersInfo(userIds, req.Token)
-	isFavorites, _ := rpc_server.GetFavoritesStatus(favoriteStatus)
+
+	//用协程去调用两个微服务，批量查询user实体和favoriteStatus实体
+	var users []*usersproto.User
+	var isFavorites []*favorite_to_video_proto.FavoriteStatus
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		//调用usersinfo方法，查一批User实体
+		users, err = rpc_server.GetUsersInfo(userIds, req.Token)
+	}()
+
+	go func() {
+		defer wg.Done()
+		//调用FavoritesStatus方法，查一批FavoriteStatus实体
+		isFavorites, _ = rpc_server.GetFavoritesStatus(favoriteStatus)
+	}()
+	wg.Wait()
 
 	//如果查到的users的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
 	//如果查到的isfavorite的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
@@ -159,54 +177,3 @@ func BuildProtoUser(user *usersproto.User) *services.User {
 		IsFollow:      user.IsFollow,
 	}
 }
-
-//
-//func BuildProtoVideo(item *model.Video, token string) *services.Video {
-//	isFavorite := false
-//	userId, err := rpc_server.GetIdByToken(token)
-//	//没有错误，说明token存在且有效，userId是解析出的当前用户id
-//	if err != nil {
-//		userId = 0
-//	} else {
-//		isFavorite, err = rpc_server.GetFavoriteStatus(item.VideoId, userId)
-//		if err != nil {
-//			fmt.Println("调用远程favorite服务失败,错误原因是：")
-//			fmt.Println(err)
-//			return &services.Video{}
-//		}
-//	}
-//
-//	video := services.Video{
-//		Id:            item.VideoId,
-//		Author:        BuildProtoUser(item.UserId, token),
-//		PlayUrl:       item.PlayUrl,
-//		CoverUrl:      item.CoverUrl,
-//		FavoriteCount: item.FavoriteCount,
-//		CommentCount:  item.CommentCount,
-//		IsFavorite:    isFavorite, //
-//		Title:         item.Title,
-//	}
-//	return &video
-//}
-//
-//func BuildProtoUser(item_id int64, token string) *services.User {
-//	//根据id查user，封装成user
-//	rpcUserInfo, err := rpc_server.GetUserInfo(item_id, token)
-//	if err != nil {
-//		fmt.Println("调用远程user服务出错了，错误是：")
-//		fmt.Println(err)
-//		return &services.User{}
-//	}
-//	//如果是空，没登陆，返回的应该是默认值
-//	if rpcUserInfo == nil {
-//		return &services.User{}
-//	}
-//	user := services.User{
-//		Id:            rpcUserInfo.Id,
-//		Name:          rpcUserInfo.Name,
-//		FollowCount:   rpcUserInfo.FollowCount,
-//		FollowerCount: rpcUserInfo.FollowerCount,
-//		IsFollow:      rpcUserInfo.IsFollow,
-//	}
-//	return &user
-//}

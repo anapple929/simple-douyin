@@ -5,16 +5,19 @@ gorm+gin+go-micro+mysql 极简版抖音
 * 注册中心:etcd
 * 网关 - api-gateway 4000
 * 用户微服务 - user 8082
-* token 8085
 * publish 8083
 * feed 8084
+* token 8085
 * favorite 8086
 * comment 8087
 ---
 ### mysql 
 43.138.51.56:3306  
+
 数据库名:simple-douyin 
+
 用户名:root 
+
 密码:jhr292023 
 
 * user 用户表
@@ -23,6 +26,19 @@ gorm+gin+go-micro+mysql 极简版抖音
 * relation 用户和用户之间关注表
 * user 用户表
 * video 视频表
+---
+### redis
+43.138.51.56:6379
+
+密码：292023
+
+热点数据
+
+db0: userid -> user
+
+db1: videoid -> video
+
+db2: userid+videoid -> bool  是否点赞 
 
 ---
 ### 运行
@@ -41,6 +57,8 @@ gorm+gin+go-micro+mysql 极简版抖音
 * /douyin/feed/
 * /douyin/favorite/action/
 * /douyin/favorite/list/
+* /douyin/comment/action/
+* /douyin/comment/list/
 ---
 ### 注意
 测试视频上传功能时，电脑要下载ffmpeg，并配置到环境变量中。

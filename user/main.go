@@ -9,10 +9,13 @@ import (
 	to_relation "user/core/to_relation"
 	"user/services"
 	to_relation_proto "user/services/to_relation"
+	"user/utils/redis"
 )
 
 func main() {
 	conf.Init()
+	// 初始化redis-DB0的连接，follow选择的DB0.
+	redis.InitRedis()
 	// etcd注册件
 	etcdReg := etcd.NewRegistry(
 		registry.Addrs("127.0.0.1:2379"),

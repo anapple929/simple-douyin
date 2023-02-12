@@ -7,6 +7,7 @@ import (
 	"feed/services"
 	"feed/services/favorite_to_video_proto"
 	usersproto "feed/services/to_relation"
+	"sync"
 	"time"
 )
 
@@ -62,8 +63,23 @@ func (*FeedService) Feed(ctx context.Context, req *services.DouyinFeedRequest, r
 			//封装isFavorites，作为参数，调用favorite微服务的远程接口
 			favoriteStatus = append(favoriteStatus, &favorite_to_video_proto.FavoriteStatus{UserId: user_id, VideoId: video.VideoId, IsFavorite: false})
 		}
-		users, _ = rpc_server.GetUsersInfo(userIds, req.Token)
-		isFavorites, _ = rpc_server.GetFavoritesStatus(favoriteStatus)
+
+		//用协程去调用两个微服务，批量查询user实体和favoriteStatus实体
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			//调用usersinfo方法，查一批User实体
+			users, _ = rpc_server.GetUsersInfo(userIds, req.Token)
+		}()
+
+		go func() {
+			defer wg.Done()
+			//调用FavoritesStatus方法，查一批FavoriteStatus实体
+			isFavorites, _ = rpc_server.GetFavoritesStatus(favoriteStatus)
+		}()
+		wg.Wait()
+
 		//如果查到的users的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
 		//如果查到的isfavorite的某一项id和video的id的某一项一致，那么就把user封装到返回的video中。
 		for _, video := range videos {

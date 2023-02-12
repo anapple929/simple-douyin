@@ -2,11 +2,16 @@ package core
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"strconv"
 	"time"
 	"user/model"
 	"user/rpc_server"
 	"user/services"
-	"user/utils"
+	"user/utils/redis"
+	"user/utils/sha256"
 )
 
 type UserService struct {
@@ -38,7 +43,7 @@ func (*UserService) Login(ctx context.Context, req *services.DouyinUserLoginRequ
 	}
 
 	//判断密码是否正确
-	if utils.Sha256(password) != user.Password {
+	if sha256.Sha256(password) != user.Password {
 		resp.StatusCode = -1
 		resp.StatusMsg = "用户名或密码错误"
 		resp.UserId = -1
@@ -85,7 +90,7 @@ func (*UserService) Register(ctx context.Context, req *services.DouyinUserRegist
 	//创建一个dao层User实体
 	user := &model.User{
 		Name:           username,
-		Password:       utils.Sha256(password),
+		Password:       sha256.Sha256(password),
 		FollowingCount: 0,
 		FollowerCount:  0,
 		CreateAt:       time.Now(),
@@ -138,13 +143,40 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 	// 获得想要获取详细信息的userId
 	userId := req.UserId
 
-	//根据userId查询User
-	user, err := model.NewUserDaoInstance().FindUserById(userId)
+	var user *model.User
+	var userString string
+
+	count, err := redis.RdbUserId.Exists(redis.Ctx, strconv.FormatInt(userId, 10)).Result()
 	if err != nil {
-		resp.StatusCode = 1
-		resp.StatusMsg = "查找用户信息时发生异常"
-		return err
+		log.Println(err)
 	}
+
+	if count > 0 {
+		//缓存里有
+		//redis，先从redis通过userId查询user实体
+		userString, err = redis.RdbUserId.Get(redis.Ctx, strconv.FormatInt(userId, 10)).Result()
+		if err != nil { //若查询缓存出错，则打印log
+			//return 0, err
+			log.Println("调用redis查询userId对应的信息出错", err)
+		}
+		json.Unmarshal([]byte(userString), &user)
+		fmt.Println("redis查出来的结果")
+		fmt.Println(&user)
+	} else {
+		fmt.Println("查数据库")
+		//根据userId查询User
+		user, err = model.NewUserDaoInstance().FindUserById(userId)
+		if err != nil {
+			resp.StatusCode = 1
+			resp.StatusMsg = "查找用户信息时发生异常"
+			return err
+		}
+		//把查到的数据放入redis
+		userValue, _ := json.Marshal(&user)
+		_ = redis.RdbUserId.Set(redis.Ctx, strconv.FormatInt(userId, 10), userValue, 0).Err()
+	}
+
+	fmt.Println(user)
 
 	////TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
 	isFollow, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv)

@@ -2,12 +2,16 @@ package to_relation
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
 	"user/model"
 	"user/rpc_server"
 	to_user "user/services/from_relation"
 	proto "user/services/to_relation"
+	"user/utils/redis"
 )
 
 type ToRelationService struct {
@@ -66,7 +70,7 @@ func (ToRelationService) UpdateFollowingCount(ctx context.Context, req *proto.Up
 }
 
 /**
-根据userId列表，获取User列表
+根据userId列表，获取User列表.
 */
 func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersByIdsRequest, resp *proto.GetUsersByIdsResponse) error {
 	var tokenUserIdConv int64
@@ -84,10 +88,44 @@ func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersB
 		resp.UserList = userResult
 		return nil
 	}
-	fmt.Println("用户id列表是：")
-	fmt.Println(req.UserId)
+
+	var searchIds []int64        //保存从redis没命中的userId,统一去mysql中查一次
+	var usersRedis []*model.User //从redis查到的user实体
+
+	//把能从redis中查到的userId先都给查到，查不到的放到searchIds中，在数据库中统一给查出来
+	for _, userIdSearchRedis := range req.UserId {
+		count, err := redis.RdbUserId.Exists(redis.Ctx, strconv.FormatInt(userIdSearchRedis, 10)).Result()
+		if err != nil {
+			log.Println(err)
+		}
+
+		if count > 0 {
+			var user *model.User //一个临时变量，存解构后的user实体
+			//缓存里有
+			//redis，先从redis通过userId查询user实体
+			userString, err := redis.RdbUserId.Get(redis.Ctx, strconv.FormatInt(userIdSearchRedis, 10)).Result()
+			if err != nil { //若查询缓存出错，则打印log
+				//return 0, err
+				log.Println("调用redis查询userId对应的信息出错", err)
+			}
+			json.Unmarshal([]byte(userString), &user)
+			usersRedis = append(usersRedis, user)
+		} else {
+			//没查到，进入searchIds数组
+			searchIds = append(searchIds, userIdSearchRedis)
+		}
+	}
+
 	//调用数据库查user实体列表
-	users, _ := model.NewUserDaoInstance().GetUsersByIds(req.UserId)
+	users, _ := model.NewUserDaoInstance().GetUsersByIds(searchIds)
+	//把mysql查到的users数据存到redis中
+	for _, user := range users {
+		userValue, _ := json.Marshal(&user)
+		_ = redis.RdbUserId.Set(redis.Ctx, strconv.FormatInt(user.UserId, 10), userValue, 0).Err()
+	}
+
+	//合并从mysql查到的users和redis查到的usersRedis
+	users = append(users, usersRedis...)
 
 	if tokenUserIdConv != -1 { //有登录的token，并且解析出来了，才远程调用两个人是否有关系的函数。
 		//构造很多RelationStatus结构体，形成一个结构体数组，传进去

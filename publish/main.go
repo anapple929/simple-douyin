@@ -11,10 +11,13 @@ import (
 	"publish/services"
 	protoToComment "publish/services/to_comment"
 	protoToFavorite "publish/services/to_favorite"
+	redis "publish/utils"
 )
 
 func main() {
 	conf.Init()
+	//redis
+	redis.InitRedis()
 	// etcd注册件
 	etcdReg := etcd.NewRegistry(
 		registry.Addrs("127.0.0.1:2379"),
