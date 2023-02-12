@@ -5,7 +5,10 @@ import (
 	etcdInit "favorite/etcd"
 	"favorite/model"
 	proto "favorite/service"
+	redis "favorite/utils/redis"
 	"fmt"
+	"log"
+	"strconv"
 	"sync"
 )
 
@@ -57,12 +60,34 @@ func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) e
 			fmt.Println("点赞失败")
 			return err
 		}
+
+		//点赞成功了，点赞状态改变，删除缓存
+		key := strconv.FormatInt(uid, 10) + "+" + strconv.FormatInt(vid, 10)
+		countRedis, err := redis.RdbUserVideo.Exists(redis.Ctx, key).Result()
+		if err != nil {
+			log.Println(err)
+		}
+		if countRedis > 0 {
+			redis.RdbUserVideo.Del(redis.Ctx, key)
+		}
+
 	} else if actionType == 2 {
 		err := db.Where("user_id=? and video_id=?", uid, vid).Delete(fav).Error
 		if err != nil {
 			fmt.Println("点赞删除失败")
 			return err
 		}
+
+		//取消点赞成功了，点赞状态改变，删除缓存
+		key := strconv.FormatInt(uid, 10) + "+" + strconv.FormatInt(vid, 10)
+		countRedis, err := redis.RdbUserVideo.Exists(redis.Ctx, key).Result()
+		if err != nil {
+			log.Println(err)
+		}
+		if countRedis > 0 {
+			redis.RdbUserVideo.Del(redis.Ctx, key)
+		}
+
 	} else {
 		return errors.New("参数错误")
 	}
