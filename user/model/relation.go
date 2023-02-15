@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sync"
 	"time"
 	to_user "user/services/from_relation"
@@ -22,9 +23,13 @@ type RelationDao struct {
 func (RelationDao) GetRelationsByIds(relationStatus []*to_user.RelationStatus) ([]*to_user.RelationStatus, error) {
 	var result []*to_user.RelationStatus
 	//调用relation数据库，查出relationStatus每一项的isFollow，封装成result返回.
+	var count int
 
-	//查数据库
-	result = relationStatus
+	for _, rs := range relationStatus {
+		_ = DB.Model(Relation{}).Where("follower_id=? and following_id=?", rs.FollowerId, rs.FollowingId).Count(&count).Error
+		result = append(result, &to_user.RelationStatus{IsFollow: count > 0, FollowerId: rs.FollowerId, FollowingId: rs.FollowingId})
+	}
+	fmt.Println(result)
 	return result, nil
 }
 
@@ -48,5 +53,5 @@ func (d *UserDao) FindRelationById(followerId int64, followeringId int64) (bool,
 	if err != nil {
 		return false, err
 	}
-	return count == 1, nil
+	return count > 0, nil
 }
