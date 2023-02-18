@@ -136,3 +136,60 @@ func (*UserDao) GetUsersByIds(userIds []int64) ([]*User, error) {
 
 	return users, nil
 }
+
+/**
+根据userId，给user表的work_count字段增加count
+*/
+func (*UserDao) AddWorkCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("work_count", gorm.Expr("work_count+?", count)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据userId，给user表的work_count字段减少cnt
+*/
+func (*UserDao) ReduceWorkCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("work_count", gorm.Expr("work_count-?", count)).Error
+	if err != nil {
+	}
+}
+
+/**
+根据userId，给user表的favorite_count字段增加count
+*/
+func (*UserDao) AddFavoriteCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("favorite_count", gorm.Expr("favorite_count+?", count)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据userId，给user表的favorite_count字段减少cnt
+*/
+func (*UserDao) ReduceFavoriteCount(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("favorite_count", gorm.Expr("favorite_count-?", count)).Error
+	if err != nil {
+	}
+}
+
+/**
+根据userId，给user表的total_favorited字段增加count
+*/
+func (*UserDao) AddTotalFavorited(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("total_favorited", gorm.Expr("total_favorited+?", count)).Error
+	if err != nil {
+		//log.Error(err)
+	}
+}
+
+/**
+根据userId，给user表的total_favorited字段减少cnt
+*/
+func (*UserDao) ReduceTotalFavorited(userId int64, count int32) {
+	err := DB.Model(User{}).Where("user_id=?", userId).Update("total_favorited", gorm.Expr("total_favorited-?", count)).Error
+	if err != nil {
+	}
+}

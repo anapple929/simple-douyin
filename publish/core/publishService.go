@@ -49,6 +49,8 @@ func (*PublishService) Publish(ctx context.Context, req *services.DouyinPublishA
 		//上传封面
 		_ = utils.UploadPicture(pictureDir, coverBytes)
 	}()
+	rpc_server.UpdateWorkCount(tokenUserIdConv, 1, 1) //调用远程user方法，更新work_count字段，+1
+
 	//构造video Dao模型
 	video := &model.Video{
 		UserId:        tokenUserIdConv,

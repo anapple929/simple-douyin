@@ -6,8 +6,12 @@ import (
 	"github.com/micro/go-micro/v2/registry/etcd"
 	"user/conf"
 	"user/core"
+	to_favorite "user/core/to_favorite"
+	to_publish "user/core/to_publish"
 	to_relation "user/core/to_relation"
 	"user/services"
+	to_favorite_proto "user/services/to_favorite"
+	to_publish_proto "user/services/to_publish"
 	to_relation_proto "user/services/to_relation"
 	"user/utils/redis"
 )
@@ -32,6 +36,8 @@ func main() {
 	// 服务注册
 	_ = services.RegisterUserServiceHandler(microService.Server(), new(core.UserService))
 	_ = to_relation_proto.RegisterToRelationServiceHandler(microService.Server(), new(to_relation.ToRelationService))
+	_ = to_publish_proto.RegisterToPublishServiceHandler(microService.Server(), new(to_publish.ToPublishService))
+	_ = to_favorite_proto.RegisterToFavoriteServiceHandler(microService.Server(), new(to_favorite.ToFavoriteService))
 	// 启动微服务
 	_ = microService.Run()
 }

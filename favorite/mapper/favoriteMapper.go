@@ -5,7 +5,7 @@ import (
 	etcdInit "favorite/etcd"
 	"favorite/model"
 	proto "favorite/service"
-	redis "favorite/utils/redis"
+	"favorite/utils/redis"
 	"fmt"
 	"log"
 	"strconv"
@@ -42,7 +42,7 @@ func (m FavoriteMapper) GetFavoriteStatus(vid int64, uid int64) (bool, error) {
 	return count == 1, nil
 }
 
-func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) error {
+func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32, token string) error {
 	db := model.DB
 	fav := &model.Favorite{
 		UserId:  uid,
@@ -60,25 +60,22 @@ func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) e
 			fmt.Println("点赞失败")
 			return err
 		}
-
-		//点赞成功了，点赞状态改变，删除缓存
-		key := strconv.FormatInt(uid, 10) + "+" + strconv.FormatInt(vid, 10)
-		countRedis, err := redis.RdbUserVideo.Exists(redis.Ctx, key).Result()
-		if err != nil {
-			log.Println(err)
-		}
-		if countRedis > 0 {
-			redis.RdbUserVideo.Del(redis.Ctx, key)
-		}
-
 	} else if actionType == 2 {
 		err := db.Where("user_id=? and video_id=?", uid, vid).Delete(fav).Error
 		if err != nil {
 			fmt.Println("点赞删除失败")
 			return err
 		}
+	} else {
+		return errors.New("参数错误")
+	}
 
-		//取消点赞成功了，点赞状态改变，删除缓存
+	//用协程去调用3个微服务，和缓存失效
+	var wg sync.WaitGroup
+	wg.Add(6)
+	go func() {
+		defer wg.Done()
+		//点赞状态改变，删除缓存
 		key := strconv.FormatInt(uid, 10) + "+" + strconv.FormatInt(vid, 10)
 		countRedis, err := redis.RdbUserVideo.Exists(redis.Ctx, key).Result()
 		if err != nil {
@@ -87,14 +84,59 @@ func (m FavoriteMapper) FavoriteAction(uid int64, vid int64, actionType int32) e
 		if countRedis > 0 {
 			redis.RdbUserVideo.Del(redis.Ctx, key)
 		}
+	}()
+	//更新用户缓存
+	go func() {
+		defer wg.Done()
+		//点赞状态改变，删除缓存
+		key := strconv.FormatInt(uid, 10)
+		countRedis, err := redis.RdbUserId.Exists(redis.Ctx, key).Result()
+		if err != nil {
+			log.Println(err)
+		}
+		if countRedis > 0 {
+			redis.RdbUserId.Del(redis.Ctx, key)
+		}
+	}()
+	//更新视频缓存
+	go func() {
+		defer wg.Done()
+		//点赞状态改变，删除缓存
+		key := strconv.FormatInt(vid, 10)
+		countRedis, err := redis.RdbVideoId.Exists(redis.Ctx, key).Result()
+		if err != nil {
+			log.Println(err)
+		}
+		if countRedis > 0 {
+			fmt.Println("删除了video key存的缓存")
+			redis.RdbVideoId.Del(redis.Ctx, key)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		action := etcdInit.CountAction(vid, 1, actionType)
+		if !action {
+			fmt.Println(errors.New("Mapper层Count维护失败"))
+		}
+	}()
 
-	} else {
-		return errors.New("参数错误")
-	}
-	action := etcdInit.CountAction(vid, 1, actionType)
-	if !action {
-		return errors.New("Mapper层Count维护失败")
-	}
+	go func() {
+		defer wg.Done()
+		actionUpdateFavoriteCount := etcdInit.UpdateFavoriteCount(uid, 1, actionType)
+		if !actionUpdateFavoriteCount {
+			fmt.Println(errors.New("Mapper层user的favorite_count维护失败"))
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		actionUpdateTotalFavorited := etcdInit.UpdateTotalFavorited(vid, 1, actionType, token)
+		if !actionUpdateTotalFavorited {
+			fmt.Println(errors.New("Mapper层user的total_favorited维护失败"))
+		}
+	}()
+	wg.Wait()
+
 	return nil
 }
 

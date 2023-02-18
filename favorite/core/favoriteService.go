@@ -27,7 +27,7 @@ func (*FavoriteService) FavoriteAction(ctx context.Context, in *proto.DouyinFavo
 		out.StatusMsg = "登录失效"
 		return err
 	}
-	err = favmapper.FavoriteAction(uid, vid, actionType)
+	err = favmapper.FavoriteAction(uid, vid, actionType, token)
 	if err != nil {
 		out.StatusCode = 500
 		out.StatusMsg = "操作失败"

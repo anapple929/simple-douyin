@@ -3,8 +3,8 @@ package etcdInit
 import (
 	"context"
 	proto "favorite/service"
+	from_user_proto "favorite/service/from_user"
 	"favorite/service/frompublish"
-
 	"fmt"
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/registry"
@@ -29,6 +29,47 @@ func CountAction(vid int64, count int32, actionType int32) bool {
 	favoriteCount, err := Service.UpdateFavoriteCount(context.TODO(), &req)
 	if err != nil || favoriteCount.StatusCode != 0 {
 		fmt.Println("favoriteCount维护失败:", err)
+		return false
+	}
+	return true
+
+}
+
+func UpdateFavoriteCount(uid int64, count int32, actionType int32) bool {
+	toFavoriteMicroService := micro.NewService(micro.Registry(EtcdReg))
+	toFavoriteService := from_user_proto.NewToFavoriteService("rpcUserService", toFavoriteMicroService.Client())
+
+	var req from_user_proto.UpdateFavoriteCountRequest
+	req.UserId = uid
+	req.Count = count
+	req.Type = actionType
+	resp, err := toFavoriteService.UpdateFavoriteCount(context.TODO(), &req)
+	if err != nil || resp.StatusCode != 0 {
+		fmt.Println("favorite_count维护失败:", err)
+		return false
+	}
+	return true
+
+}
+
+func UpdateTotalFavorited(vid int64, count int32, actionType int32, token string) bool {
+	toFavoriteMicroService := micro.NewService(micro.Registry(EtcdReg))
+	toFavoriteService := from_user_proto.NewToFavoriteService("rpcUserService", toFavoriteMicroService.Client())
+
+	//根据vid查找uid
+	var videoId []int64
+	videoId = append(videoId, vid)
+	videos, err := GetVideosByIds(videoId, token)
+	fmt.Println(videos)
+	uid := videos[0].Author.Id
+
+	var req from_user_proto.UpdateTotalFavoritedRequest
+	req.UserId = uid
+	req.Count = count
+	req.Type = actionType
+	resp, err := toFavoriteService.UpdateTotalFavorited(context.TODO(), &req)
+	if err != nil || resp.StatusCode != 0 {
+		fmt.Println("total_favorited 维护失败:", err)
 		return false
 	}
 	return true

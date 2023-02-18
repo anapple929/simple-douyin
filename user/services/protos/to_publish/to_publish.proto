@@ -1,0 +1,18 @@
+syntax = "proto3";
+package services;
+option go_package = "../;proto";
+
+message UpdateWorkCount_request {
+  int64 user_id = 1; // 用户id
+  int32 count = 2;// 增加的数量
+  int32 type = 3;// 1是增加，2是减少
+}
+
+message UpdateWorkCount_response {
+  int32 status_code = 1; //响应，成功是0，失败是其他值
+}
+
+
+service ToPublishService{
+  rpc UpdateWorkCount(UpdateWorkCount_request) returns (UpdateWorkCount_response);
+}
