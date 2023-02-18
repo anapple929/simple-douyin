@@ -8,13 +8,19 @@ import (
 )
 
 type User struct {
-	UserId         int64  `gorm:"primary_key"`
-	Name           string `gorm:"default:(-)"`
-	FollowingCount int64  `gorm:"default:(-)"`
-	FollowerCount  int64  `gorm:"default:(-)"`
-	Password       string `gorm:"default:(-)"`
-	CreateAt       time.Time
-	DeleteAt       time.Time
+	UserId          int64  `gorm:"primary_key"`
+	Name            string `gorm:"default:(-)"`
+	FollowingCount  int64  `gorm:"default:(-)"`
+	FollowerCount   int64  `gorm:"default:(-)"`
+	Password        string `gorm:"default:(-)"`
+	Avatar          string `gorm:"default:(-)"`
+	BackgroundImage string `gorm:"default:(-)"`
+	Signature       string `gorm:"default:(-)"`
+	TotalFavorited  int64  `gorm:"default:(-)"`
+	WorkCount       int64  `gorm:"default:(-)"`
+	FavoriteCount   int64  `gorm:"default:(-)"`
+	CreateAt        time.Time
+	DeleteAt        time.Time
 }
 
 func (User) TableName() string {

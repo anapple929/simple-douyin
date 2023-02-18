@@ -125,6 +125,7 @@ resp: token判断用户是否登录， userId，想要查询的用户的Id
 */
 //TODO，查出来的数据可以放在缓存里
 func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserRequest, resp *services.DouyinUserResponse) error {
+	fmt.Println("进入userInfo方法了")
 	if req.Token == "" { //如果传进来的直接是空，比如feed流可以无登录用户刷信息，video会调用到这里，可以不用调用rpc的token去解析，直接返回。
 		resp.StatusCode = -1
 		resp.StatusMsg = "登录失效，请重新登录"
@@ -166,6 +167,8 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 		fmt.Println("查数据库")
 		//根据userId查询User
 		user, err = model.NewUserDaoInstance().FindUserById(userId)
+		fmt.Println("输出一下改了protobuf之后的user")
+		fmt.Println(user)
 		if err != nil {
 			resp.StatusCode = 1
 			resp.StatusMsg = "查找用户信息时发生异常"
@@ -178,7 +181,7 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 
 	fmt.Println(user)
 
-	////TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
+	//TODO 这里应该调用Relation的微服务，是否有关注关系？为了不影响后续使用，目前先做了数据库查询，需要替换
 	isFollow, err := model.NewUserDaoInstance().FindRelationById(userId, tokenUserIdConv)
 	if err != nil {
 		resp.StatusCode = -1
@@ -197,11 +200,14 @@ func (*UserService) UserInfo(ctx context.Context, req *services.DouyinUserReques
 */
 func BuildProtoUser(item *model.User, isFollow bool) *services.User {
 	user := services.User{
-		Id:            item.UserId,
-		Name:          item.Name,
-		FollowCount:   item.FollowingCount,
-		FollowerCount: item.FollowerCount,
-		IsFollow:      isFollow,
+		Id:             item.UserId,
+		Name:           item.Name,
+		FollowCount:    item.FollowingCount,
+		FollowerCount:  item.FollowerCount,
+		IsFollow:       isFollow,
+		TotalFavorited: item.TotalFavorited,
+		WorkCount:      item.WorkCount,
+		FavoriteCount:  item.FavoriteCount,
 	}
 	return &user
 }

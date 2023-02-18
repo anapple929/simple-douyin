@@ -127,11 +127,14 @@ func BuildProtoVideo(video *model.Video, user *usersproto.User, isFavorite bool)
 
 func BuildProtoUser(user *usersproto.User) *services.User {
 	return &services.User{
-		Id:            user.Id,
-		Name:          user.Name,
-		FollowCount:   user.FollowCount,
-		FollowerCount: user.FollowerCount,
-		IsFollow:      user.IsFollow,
+		Id:             user.Id,
+		Name:           user.Name,
+		FollowCount:    user.FollowCount,
+		FollowerCount:  user.FollowerCount,
+		IsFollow:       user.IsFollow,
+		TotalFavorited: user.TotalFavorited,
+		WorkCount:      user.WorkCount,
+		FavoriteCount:  user.FavoriteCount,
 	}
 }
 

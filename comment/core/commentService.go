@@ -8,6 +8,8 @@ import (
 	userproto "comment/service/userproto"
 	"context"
 	"fmt"
+	//"github.com/dtm-labs/client/dtmgrpc"
+	//"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"time"
 )
 
@@ -46,6 +48,22 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 
 	//判断一下actionType的类型 1 发布消息 2 删除消息， 做一个if判断
 	if in.ActionType == 1 {
+
+		//barrier, _ := dtmgrpc.BarrierFromGrpc(ctx)
+		//// 开启子事务屏障
+		//db, _ := sqlx.NewMysql("").RawDB()
+		//if err := barrier.CallWithDB(db, func(tx *sql.Tx) error {
+		//	//如果是发布消息，将拿到的参数调用model中的数据库方法，将数据传入数据库
+		//	comment, _ = model.NewCommentDaoInstance().CreateComment(comment)
+		//	//调用rpc_server的CommentCountAction，增加发布数
+		//	rpc_server.CountAction(in.VideoId, 1, in.ActionType)
+		//	return nil
+		//}); err != nil {
+		//	fmt.Println("全局事务出错了。")
+		//}
+
+		//没有分布式事务版本↓
+
 		//如果是发布消息，将拿到的参数调用model中的数据库方法，将数据传入数据库
 		comment, _ := model.NewCommentDaoInstance().CreateComment(comment)
 		//调用rpc_server的CommentCountAction，增加发布数

@@ -118,6 +118,7 @@ func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersB
 
 	//调用数据库查user实体列表
 	users, _ := model.NewUserDaoInstance().GetUsersByIds(searchIds)
+
 	//把mysql查到的users数据存到redis中
 	for _, user := range users {
 		userValue, _ := json.Marshal(&user)
@@ -126,6 +127,8 @@ func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersB
 
 	//合并从mysql查到的users和redis查到的usersRedis
 	users = append(users, usersRedis...)
+	fmt.Println("得到的users是这样的")
+	fmt.Println(users)
 
 	if tokenUserIdConv != -1 { //有登录的token，并且解析出来了，才远程调用两个人是否有关系的函数。
 		//构造很多RelationStatus结构体，形成一个结构体数组，传进去
@@ -140,11 +143,14 @@ func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersB
 	} else {
 		for _, user := range users {
 			userResult = append(userResult, &proto.User{
-				Id:            user.UserId,
-				Name:          user.Name,
-				FollowCount:   user.FollowingCount,
-				FollowerCount: user.FollowerCount,
-				IsFollow:      false,
+				Id:             user.UserId,
+				Name:           user.Name,
+				FollowCount:    user.FollowingCount,
+				FollowerCount:  user.FollowerCount,
+				IsFollow:       false,
+				TotalFavorited: user.TotalFavorited,
+				WorkCount:      user.WorkCount,
+				FavoriteCount:  user.FavoriteCount,
 			})
 		}
 	}
@@ -169,11 +175,14 @@ func BuildProtoUser(users []*model.User, relations []*to_user.RelationStatus) []
 			}
 		}
 		userResult = append(userResult, &proto.User{
-			Id:            user.UserId,
-			Name:          user.Name,
-			FollowCount:   user.FollowingCount,
-			FollowerCount: user.FollowerCount,
-			IsFollow:      isFollow,
+			Id:             user.UserId,
+			Name:           user.Name,
+			FollowCount:    user.FollowingCount,
+			FollowerCount:  user.FollowerCount,
+			IsFollow:       isFollow,
+			TotalFavorited: user.TotalFavorited,
+			WorkCount:      user.WorkCount,
+			FavoriteCount:  user.FavoriteCount,
 		})
 	}
 	return userResult
