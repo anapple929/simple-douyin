@@ -3,7 +3,7 @@ package conf
 import (
 	"fmt"
 	"github.com/go-ini/ini"
-	"relation/model"
+	"message/model"
 	"strings"
 )
 
