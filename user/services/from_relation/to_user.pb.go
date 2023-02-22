@@ -372,19 +372,19 @@ func file_to_user_proto_rawDescGZIP() []byte {
 
 var file_to_user_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_to_user_proto_goTypes = []interface{}{
-	(*GetRelationStatus_Request)(nil),   // 0: services.GetRelationStatus_Request
-	(*GetRelationStatus_Response)(nil),  // 1: services.GetRelationStatus_Response
-	(*GetRelationsStatus_Request)(nil),  // 2: services.GetRelationsStatus_Request
-	(*GetRelationsStatus_Response)(nil), // 3: services.GetRelationsStatus_Response
-	(*RelationStatus)(nil),              // 4: services.RelationStatus
+	(*GetRelationStatus_Request)(nil),   // 0: service.GetRelationStatus_Request
+	(*GetRelationStatus_Response)(nil),  // 1: service.GetRelationStatus_Response
+	(*GetRelationsStatus_Request)(nil),  // 2: service.GetRelationsStatus_Request
+	(*GetRelationsStatus_Response)(nil), // 3: service.GetRelationsStatus_Response
+	(*RelationStatus)(nil),              // 4: service.RelationStatus
 }
 var file_to_user_proto_depIdxs = []int32{
-	4, // 0: services.GetRelationsStatus_Request.relationStatus:type_name -> services.RelationStatus
-	4, // 1: services.GetRelationsStatus_Response.isFollow:type_name -> services.RelationStatus
-	0, // 2: services.ToUserService.GetRelationStatus:input_type -> services.GetRelationStatus_Request
-	2, // 3: services.ToUserService.GetRelationsStatus:input_type -> services.GetRelationsStatus_Request
-	1, // 4: services.ToUserService.GetRelationStatus:output_type -> services.GetRelationStatus_Response
-	3, // 5: services.ToUserService.GetRelationsStatus:output_type -> services.GetRelationsStatus_Response
+	4, // 0: service.GetRelationsStatus_Request.relationStatus:type_name -> service.RelationStatus
+	4, // 1: service.GetRelationsStatus_Response.isFollow:type_name -> service.RelationStatus
+	0, // 2: service.ToUserService.GetRelationStatus:input_type -> service.GetRelationStatus_Request
+	2, // 3: service.ToUserService.GetRelationsStatus:input_type -> service.GetRelationsStatus_Request
+	1, // 4: service.ToUserService.GetRelationStatus:output_type -> service.GetRelationStatus_Response
+	3, // 5: service.ToUserService.GetRelationsStatus:output_type -> service.GetRelationsStatus_Response
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

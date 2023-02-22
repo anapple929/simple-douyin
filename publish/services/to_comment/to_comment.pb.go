@@ -170,12 +170,12 @@ func file_to_comment_proto_rawDescGZIP() []byte {
 
 var file_to_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_to_comment_proto_goTypes = []interface{}{
-	(*UpdateCommentCountRequest)(nil),  // 0: services.UpdateCommentCount_request
-	(*UpdateCommentCountResponse)(nil), // 1: services.UpdateCommentCount_response
+	(*UpdateCommentCountRequest)(nil),  // 0: service.UpdateCommentCount_request
+	(*UpdateCommentCountResponse)(nil), // 1: service.UpdateCommentCount_response
 }
 var file_to_comment_proto_depIdxs = []int32{
-	0, // 0: services.ToCommentService.UpdateCommentCount:input_type -> services.UpdateCommentCount_request
-	1, // 1: services.ToCommentService.UpdateCommentCount:output_type -> services.UpdateCommentCount_response
+	0, // 0: service.ToCommentService.UpdateCommentCount:input_type -> service.UpdateCommentCount_request
+	1, // 1: service.ToCommentService.UpdateCommentCount:output_type -> service.UpdateCommentCount_response
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

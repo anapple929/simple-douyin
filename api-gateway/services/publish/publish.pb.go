@@ -546,20 +546,20 @@ func file_publish_proto_rawDescGZIP() []byte {
 
 var file_publish_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_publish_proto_goTypes = []interface{}{
-	(*DouyinPublishListRequest)(nil),    // 0: services.DouyinPublishListRequest
-	(*DouyinPublishListResponse)(nil),   // 1: services.DouyinPublishListResponse
-	(*Video)(nil),                       // 2: services.Video
-	(*User)(nil),                        // 3: services.User
-	(*DouyinPublishActionRequest)(nil),  // 4: services.DouyinPublishActionRequest
-	(*DouyinPublishActionResponse)(nil), // 5: services.DouyinPublishActionResponse
+	(*DouyinPublishListRequest)(nil),    // 0: service.DouyinPublishListRequest
+	(*DouyinPublishListResponse)(nil),   // 1: service.DouyinPublishListResponse
+	(*Video)(nil),                       // 2: service.Video
+	(*User)(nil),                        // 3: service.User
+	(*DouyinPublishActionRequest)(nil),  // 4: service.DouyinPublishActionRequest
+	(*DouyinPublishActionResponse)(nil), // 5: service.DouyinPublishActionResponse
 }
 var file_publish_proto_depIdxs = []int32{
-	2, // 0: services.DouyinPublishListResponse.VideoList:type_name -> services.Video
-	3, // 1: services.Video.Author:type_name -> services.User
-	0, // 2: services.PublishService.PublishList:input_type -> services.DouyinPublishListRequest
-	4, // 3: services.PublishService.Publish:input_type -> services.DouyinPublishActionRequest
-	1, // 4: services.PublishService.PublishList:output_type -> services.DouyinPublishListResponse
-	5, // 5: services.PublishService.Publish:output_type -> services.DouyinPublishActionResponse
+	2, // 0: service.DouyinPublishListResponse.VideoList:type_name -> service.Video
+	3, // 1: service.Video.Author:type_name -> service.User
+	0, // 2: service.PublishService.PublishList:input_type -> service.DouyinPublishListRequest
+	4, // 3: service.PublishService.Publish:input_type -> service.DouyinPublishActionRequest
+	1, // 4: service.PublishService.PublishList:output_type -> service.DouyinPublishListResponse
+	5, // 5: service.PublishService.Publish:output_type -> service.DouyinPublishActionResponse
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

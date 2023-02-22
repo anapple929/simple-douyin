@@ -128,7 +128,7 @@ func (*RelationService) FollowerList(ctx context.Context, in *proto.DouyinRelati
 		out.StatusMsg = "登录失效，请重新登录"
 		return nil
 	}
-	userId, err := rpc_server.GetIdByToken(in.Token)
+	_, err := rpc_server.GetIdByToken(in.Token)
 	if err != nil {
 		out.StatusCode = -1
 		out.StatusMsg = "登录失效，请重新登录"
@@ -139,7 +139,7 @@ func (*RelationService) FollowerList(ctx context.Context, in *proto.DouyinRelati
 	//拿到userIds集合，调用usersinfo方法，查一批User实体
 	var userIds []int64
 	//调用数据库方法
-	userIds = model.NewRelationDaoInstance().QueryFollowerIds(userId)
+	userIds = model.NewRelationDaoInstance().QueryFollowerIds(in.UserId)
 
 	//调用usersinfo方法，查一批User实体
 	users, _ := rpc_server.GetUsersInfo(userIds, in.Token)
@@ -177,7 +177,7 @@ func (*RelationService) FriendList(ctx context.Context, in *proto.DouyinRelation
 	//userId是本人，查一下他的好友，先查他的粉丝id
 	var userIds []int64
 	//调用数据库方法,查询他的粉丝ids
-	userIds = model.NewRelationDaoInstance().QueryFollowerIds(userId)
+	userIds = model.NewRelationDaoInstance().QueryFollowerIds(in.UserId)
 	//查一下，粉丝id作为发起关注人，他作为被关注人，是否有关注信息，有就把这种粉丝id列表返回
 	friendIds := model.NewRelationDaoInstance().QueryFriendIds(userId, userIds)
 	//批量远程调用，根据朋友id列表，查询对应的Message列表

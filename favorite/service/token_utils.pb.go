@@ -149,12 +149,12 @@ func file_token_utils_proto_rawDescGZIP() []byte {
 
 var file_token_utils_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_token_utils_proto_goTypes = []interface{}{
-	(*GetIdByTokenRequest)(nil),  // 0: services.GetIdByToken_request
-	(*GetIdByTokenResponse)(nil), // 1: services.GetIdByToken_response
+	(*GetIdByTokenRequest)(nil),  // 0: service.GetIdByToken_request
+	(*GetIdByTokenResponse)(nil), // 1: service.GetIdByToken_response
 }
 var file_token_utils_proto_depIdxs = []int32{
-	0, // 0: services.TokenService.GetIdByToken:input_type -> services.GetIdByToken_request
-	1, // 1: services.TokenService.GetIdByToken:output_type -> services.GetIdByToken_response
+	0, // 0: service.TokenService.GetIdByToken:input_type -> service.GetIdByToken_request
+	1, // 1: service.TokenService.GetIdByToken:output_type -> service.GetIdByToken_response
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

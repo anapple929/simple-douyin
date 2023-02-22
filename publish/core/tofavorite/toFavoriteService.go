@@ -99,7 +99,7 @@ func (*ToFavoriteService) GetVideosByIds(ctx context.Context, req *proto.GetVide
 	//把mysql查到的videos数据存到redis中
 	for _, video := range videos {
 		videoValue, _ := json.Marshal(&video)
-		_ = redis.RdbVideoId.Set(redis.Ctx, strconv.FormatInt(video.UserId, 10), videoValue, 0).Err()
+		_ = redis.RdbVideoId.Set(redis.Ctx, strconv.FormatInt(video.VideoId, 10), videoValue, 0).Err()
 	}
 
 	if err != nil {

@@ -526,20 +526,20 @@ func file_fav_proto_rawDescGZIP() []byte {
 
 var file_fav_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_fav_proto_goTypes = []interface{}{
-	(*DouyinFavoriteActionRequest)(nil),  // 0: services.douyin_favorite_action_request
-	(*DouyinFavoriteActionResponse)(nil), // 1: services.douyin_favorite_action_response
-	(*DouyinFavoriteListRequest)(nil),    // 2: services.douyin_favorite_list_request
-	(*DouyinFavoriteListResponse)(nil),   // 3: services.douyin_favorite_list_response
-	(*Video)(nil),                        // 4: services.Video
-	(*User)(nil),                         // 5: services.User
+	(*DouyinFavoriteActionRequest)(nil),  // 0: service.douyin_favorite_action_request
+	(*DouyinFavoriteActionResponse)(nil), // 1: service.douyin_favorite_action_response
+	(*DouyinFavoriteListRequest)(nil),    // 2: service.douyin_favorite_list_request
+	(*DouyinFavoriteListResponse)(nil),   // 3: service.douyin_favorite_list_response
+	(*Video)(nil),                        // 4: service.Video
+	(*User)(nil),                         // 5: service.User
 }
 var file_fav_proto_depIdxs = []int32{
-	4, // 0: services.douyin_favorite_list_response.video_list:type_name -> services.Video
-	5, // 1: services.Video.author:type_name -> services.User
-	0, // 2: services.FavoriteService.FavoriteAction:input_type -> services.douyin_favorite_action_request
-	2, // 3: services.FavoriteService.FavoriteList:input_type -> services.douyin_favorite_list_request
-	1, // 4: services.FavoriteService.FavoriteAction:output_type -> services.douyin_favorite_action_response
-	3, // 5: services.FavoriteService.FavoriteList:output_type -> services.douyin_favorite_list_response
+	4, // 0: service.douyin_favorite_list_response.video_list:type_name -> service.Video
+	5, // 1: service.Video.author:type_name -> service.User
+	0, // 2: service.FavoriteService.FavoriteAction:input_type -> service.douyin_favorite_action_request
+	2, // 3: service.FavoriteService.FavoriteList:input_type -> service.douyin_favorite_list_request
+	1, // 4: service.FavoriteService.FavoriteAction:output_type -> service.douyin_favorite_action_response
+	3, // 5: service.FavoriteService.FavoriteList:output_type -> service.douyin_favorite_list_response
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

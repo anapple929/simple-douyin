@@ -46,6 +46,22 @@ func NewRouter(service map[string]interface{}) *gin.Engine {
 			comment.POST("/action/", handlers.CommentAction)
 			comment.GET("/list/", handlers.CommentList)
 		}
+
+		//relation
+		relation := v1.Group("/relation")
+		{
+			relation.POST("/action/", handlers.RelationAction)
+			relation.GET("/follow/list/", handlers.FollowList)
+			relation.GET("/follower/list/", handlers.FollowerList)
+			relation.GET("/friend/list/", handlers.FriendList)
+		}
+
+		//message
+		message := v1.Group("/message")
+		{
+			message.POST("/action/", handlers.MessageAction)
+			message.GET("/chat/", handlers.MessageList)
+		}
 	}
 	return ginRouter
 }

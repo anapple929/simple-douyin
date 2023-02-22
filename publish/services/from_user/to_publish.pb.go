@@ -169,12 +169,12 @@ func file_to_publish_proto_rawDescGZIP() []byte {
 
 var file_to_publish_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_to_publish_proto_goTypes = []interface{}{
-	(*UpdateWorkCountRequest)(nil),  // 0: services.UpdateWorkCount_request
-	(*UpdateWorkCountResponse)(nil), // 1: services.UpdateWorkCount_response
+	(*UpdateWorkCountRequest)(nil),  // 0: service.UpdateWorkCount_request
+	(*UpdateWorkCountResponse)(nil), // 1: service.UpdateWorkCount_response
 }
 var file_to_publish_proto_depIdxs = []int32{
-	0, // 0: services.ToPublishService.UpdateWorkCount:input_type -> services.UpdateWorkCount_request
-	1, // 1: services.ToPublishService.UpdateWorkCount:output_type -> services.UpdateWorkCount_response
+	0, // 0: service.ToPublishService.UpdateWorkCount:input_type -> service.UpdateWorkCount_request
+	1, // 1: service.ToPublishService.UpdateWorkCount:output_type -> service.UpdateWorkCount_response
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

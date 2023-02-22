@@ -517,20 +517,20 @@ func file_to_favorite_proto_rawDescGZIP() []byte {
 
 var file_to_favorite_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_to_favorite_proto_goTypes = []interface{}{
-	(*UpdateFavoriteCountRequest)(nil),  // 0: services.UpdateFavoriteCount_request
-	(*UpdateFavoriteCountResponse)(nil), // 1: services.UpdateFavoriteCount_response
-	(*GetVideosByIdsRequest)(nil),       // 2: services.GetVideosByIds_request
-	(*GetVideosByIdsResponse)(nil),      // 3: services.GetVideosByIds_response
-	(*Video)(nil),                       // 4: services.Video
-	(*User)(nil),                        // 5: services.User
+	(*UpdateFavoriteCountRequest)(nil),  // 0: service.UpdateFavoriteCount_request
+	(*UpdateFavoriteCountResponse)(nil), // 1: service.UpdateFavoriteCount_response
+	(*GetVideosByIdsRequest)(nil),       // 2: service.GetVideosByIds_request
+	(*GetVideosByIdsResponse)(nil),      // 3: service.GetVideosByIds_response
+	(*Video)(nil),                       // 4: service.Video
+	(*User)(nil),                        // 5: service.User
 }
 var file_to_favorite_proto_depIdxs = []int32{
-	4, // 0: services.GetVideosByIds_response.VideoList:type_name -> services.Video
-	5, // 1: services.Video.Author:type_name -> services.User
-	0, // 2: services.ToFavoriteService.UpdateFavoriteCount:input_type -> services.UpdateFavoriteCount_request
-	2, // 3: services.ToFavoriteService.GetVideosByIds:input_type -> services.GetVideosByIds_request
-	1, // 4: services.ToFavoriteService.UpdateFavoriteCount:output_type -> services.UpdateFavoriteCount_response
-	3, // 5: services.ToFavoriteService.GetVideosByIds:output_type -> services.GetVideosByIds_response
+	4, // 0: service.GetVideosByIds_response.VideoList:type_name -> service.Video
+	5, // 1: service.Video.Author:type_name -> service.User
+	0, // 2: service.ToFavoriteService.UpdateFavoriteCount:input_type -> service.UpdateFavoriteCount_request
+	2, // 3: service.ToFavoriteService.GetVideosByIds:input_type -> service.GetVideosByIds_request
+	1, // 4: service.ToFavoriteService.UpdateFavoriteCount:output_type -> service.UpdateFavoriteCount_response
+	3, // 5: service.ToFavoriteService.GetVideosByIds:output_type -> service.GetVideosByIds_response
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

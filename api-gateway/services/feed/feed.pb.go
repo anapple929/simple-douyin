@@ -480,16 +480,16 @@ func file_feed_proto_rawDescGZIP() []byte {
 
 var file_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_feed_proto_goTypes = []interface{}{
-	(*DouyinFeedRequest)(nil),  // 0: services.DouyinFeedRequest
-	(*DouyinFeedResponse)(nil), // 1: services.DouyinFeedResponse
-	(*Video)(nil),              // 2: services.Video
-	(*User)(nil),               // 3: services.User
+	(*DouyinFeedRequest)(nil),  // 0: service.DouyinFeedRequest
+	(*DouyinFeedResponse)(nil), // 1: service.DouyinFeedResponse
+	(*Video)(nil),              // 2: service.Video
+	(*User)(nil),               // 3: service.User
 }
 var file_feed_proto_depIdxs = []int32{
-	2, // 0: services.DouyinFeedResponse.VideoList:type_name -> services.Video
-	3, // 1: services.Video.Author:type_name -> services.User
-	0, // 2: services.FeedService.Feed:input_type -> services.DouyinFeedRequest
-	1, // 3: services.FeedService.Feed:output_type -> services.DouyinFeedResponse
+	2, // 0: service.DouyinFeedResponse.VideoList:type_name -> service.Video
+	3, // 1: service.Video.Author:type_name -> service.User
+	0, // 2: service.FeedService.Feed:input_type -> service.DouyinFeedRequest
+	1, // 3: service.FeedService.Feed:output_type -> service.DouyinFeedResponse
 	3, // [3:4] is the sub-list for method output_type
 	2, // [2:3] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

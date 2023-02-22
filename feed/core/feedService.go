@@ -139,7 +139,7 @@ func BuildProtoUser(user *usersproto.User) *services.User {
 }
 
 //
-//func BuildProtoVideo(item *model.Video, token string) *services.Video {
+//func BuildProtoVideo(item *model.Video, token string) *service.Video {
 //	isFavorite := false
 //	var userId int64
 //	var err error
@@ -152,14 +152,14 @@ func BuildProtoUser(user *usersproto.User) *services.User {
 //			if err != nil {
 //				fmt.Println("调用远程favorite服务失败,错误原因是：")
 //				fmt.Println(err)
-//				return &services.Video{}
+//				return &service.Video{}
 //			}
 //		}
 //	} else {
 //		userId = 0
 //	}
 //
-//	video := services.Video{
+//	video := service.Video{
 //		Id:            item.VideoId,
 //		Author:        BuildProtoUser(item.UserId, token),
 //		PlayUrl:       item.PlayUrl,
@@ -172,18 +172,18 @@ func BuildProtoUser(user *usersproto.User) *services.User {
 //	return &video
 //}
 //
-//func BuildProtoUser(item_id int64, token string) *services.User {
+//func BuildProtoUser(item_id int64, token string) *service.User {
 //	rpcUserInfo, err := rpc_server.GetUserInfo(item_id, token)
 //	if err != nil {
 //		fmt.Println("调用远程user服务失败,错误原因是：")
 //		fmt.Println(err)
-//		return &services.User{}
+//		return &service.User{}
 //	}
 //	//如果是空，没登陆，返回的应该是默认值
 //	if rpcUserInfo == nil {
-//		return &services.User{}
+//		return &service.User{}
 //	}
-//	user := services.User{
+//	user := service.User{
 //		Id:            rpcUserInfo.Id,
 //		Name:          rpcUserInfo.Name,
 //		FollowCount:   rpcUserInfo.FollowCount,

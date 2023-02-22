@@ -14,9 +14,29 @@ import (
 //上传视频
 func Publish(ginCtx *gin.Context) {
 	var publishReq publish.DouyinPublishActionRequest
+
 	publishReq.Title = ginCtx.PostForm("title")
 	publishReq.Token = ginCtx.PostForm("token")
 	fileHeader, _ := ginCtx.FormFile("data")
+
+	//if publishReq.Title == "" {
+	//	ginCtx.JSON(http.StatusOK, publish.DouyinPublishActionResponse{
+	//		StatusCode: -1,
+	//		StatusMsg:  "题目不能为空",
+	//	})
+	//}
+	//if publishReq.Token == "" {
+	//	ginCtx.JSON(http.StatusOK, publish.DouyinPublishActionResponse{
+	//		StatusCode: -1,
+	//		StatusMsg:  "登录失效，重新登录",
+	//	})
+	//}
+	//if fileHeader == nil {
+	//	ginCtx.JSON(http.StatusOK, publish.DouyinPublishActionResponse{
+	//		StatusCode: -1,
+	//		StatusMsg:  "文件不能为空",
+	//	})
+	//}
 
 	file, err := fileHeader.Open()
 	if err != nil {

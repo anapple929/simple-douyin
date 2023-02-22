@@ -517,21 +517,21 @@ func file_comment_proto_rawDescGZIP() []byte {
 
 var file_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_comment_proto_goTypes = []interface{}{
-	(*DouyinCommentActionRequest)(nil),  // 0: services.douyin_comment_action_request
-	(*DouyinCommentActionResponse)(nil), // 1: services.douyin_comment_action_response
-	(*Comment)(nil),                     // 2: services.Comment
-	(*DouyinCommentListRequest)(nil),    // 3: services.douyin_comment_list_request
-	(*DouyinCommentListResponse)(nil),   // 4: services.douyin_comment_list_response
-	(*User)(nil),                        // 5: services.User
+	(*DouyinCommentActionRequest)(nil),  // 0: service.douyin_comment_action_request
+	(*DouyinCommentActionResponse)(nil), // 1: service.douyin_comment_action_response
+	(*Comment)(nil),                     // 2: service.Comment
+	(*DouyinCommentListRequest)(nil),    // 3: service.douyin_comment_list_request
+	(*DouyinCommentListResponse)(nil),   // 4: service.douyin_comment_list_response
+	(*User)(nil),                        // 5: service.User
 }
 var file_comment_proto_depIdxs = []int32{
-	2, // 0: services.douyin_comment_action_response.comment:type_name -> services.Comment
-	5, // 1: services.Comment.user:type_name -> services.User
-	2, // 2: services.douyin_comment_list_response.comment_list:type_name -> services.Comment
-	0, // 3: services.CommentService.CommentAction:input_type -> services.douyin_comment_action_request
-	3, // 4: services.CommentService.CommentList:input_type -> services.douyin_comment_list_request
-	1, // 5: services.CommentService.CommentAction:output_type -> services.douyin_comment_action_response
-	4, // 6: services.CommentService.CommentList:output_type -> services.douyin_comment_list_response
+	2, // 0: service.douyin_comment_action_response.comment:type_name -> service.Comment
+	5, // 1: service.Comment.user:type_name -> service.User
+	2, // 2: service.douyin_comment_list_response.comment_list:type_name -> service.Comment
+	0, // 3: service.CommentService.CommentAction:input_type -> service.douyin_comment_action_request
+	3, // 4: service.CommentService.CommentList:input_type -> service.douyin_comment_list_request
+	1, // 5: service.CommentService.CommentAction:output_type -> service.douyin_comment_action_response
+	4, // 6: service.CommentService.CommentList:output_type -> service.douyin_comment_list_response
 	5, // [5:7] is the sub-list for method output_type
 	3, // [3:5] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

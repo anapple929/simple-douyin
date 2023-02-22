@@ -1,0 +1,32 @@
+syntax = "proto3";
+package services;
+option go_package = "../;proto";
+
+message query_messages_by_users_request {
+    repeated QueryBody queryBody = 1;
+}
+
+message query_messages_by_users_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  repeated QueryBody queryBody = 2;
+}
+
+message QueryBody {
+  int64 from_user_id = 1;// 登录用户
+  int64 to_user_id = 2 ;//登录用户的好友
+  Message message = 3 ;//这两个人的最新消息
+  int64 msgType = 4; //message消息的类型，0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
+}
+
+
+message Message {
+  int64 id = 1; // 消息id
+  int64 to_user_id = 2; // 该消息接收者的id
+  int64 from_user_id =3; // 该消息发送者的id
+  string content = 4; // 消息内容
+  string create_time = 5; // 消息创建时间
+}
+
+service ToRelationService{
+  rpc QueryMessagesByUsers(query_messages_by_users_request) returns (query_messages_by_users_response); //根据一组user，查一组最新消息
+}

@@ -361,19 +361,19 @@ func file_to_video_proto_rawDescGZIP() []byte {
 
 var file_to_video_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_to_video_proto_goTypes = []interface{}{
-	(*GetFavoriteStatus_Request)(nil),   // 0: services.GetFavoriteStatus_Request
-	(*GetFavoriteStatus_Response)(nil),  // 1: services.GetFavoriteStatus_Response
-	(*GetFavoritesStatus_Request)(nil),  // 2: services.GetFavoritesStatus_Request
-	(*GetFavoritesStatus_Response)(nil), // 3: services.GetFavoritesStatus_Response
-	(*FavoriteStatus)(nil),              // 4: services.FavoriteStatus
+	(*GetFavoriteStatus_Request)(nil),   // 0: service.GetFavoriteStatus_Request
+	(*GetFavoriteStatus_Response)(nil),  // 1: service.GetFavoriteStatus_Response
+	(*GetFavoritesStatus_Request)(nil),  // 2: service.GetFavoritesStatus_Request
+	(*GetFavoritesStatus_Response)(nil), // 3: service.GetFavoritesStatus_Response
+	(*FavoriteStatus)(nil),              // 4: service.FavoriteStatus
 }
 var file_to_video_proto_depIdxs = []int32{
-	4, // 0: services.GetFavoritesStatus_Request.favoriteStatus:type_name -> services.FavoriteStatus
-	4, // 1: services.GetFavoritesStatus_Response.isFavorite:type_name -> services.FavoriteStatus
-	0, // 2: services.ToVideoService.GetFavoriteStatus:input_type -> services.GetFavoriteStatus_Request
-	2, // 3: services.ToVideoService.GetFavoritesStatus:input_type -> services.GetFavoritesStatus_Request
-	1, // 4: services.ToVideoService.GetFavoriteStatus:output_type -> services.GetFavoriteStatus_Response
-	3, // 5: services.ToVideoService.GetFavoritesStatus:output_type -> services.GetFavoritesStatus_Response
+	4, // 0: service.GetFavoritesStatus_Request.favoriteStatus:type_name -> service.FavoriteStatus
+	4, // 1: service.GetFavoritesStatus_Response.isFavorite:type_name -> service.FavoriteStatus
+	0, // 2: service.ToVideoService.GetFavoriteStatus:input_type -> service.GetFavoriteStatus_Request
+	2, // 3: service.ToVideoService.GetFavoritesStatus:input_type -> service.GetFavoritesStatus_Request
+	1, // 4: service.ToVideoService.GetFavoriteStatus:output_type -> service.GetFavoriteStatus_Response
+	3, // 5: service.ToVideoService.GetFavoritesStatus:output_type -> service.GetFavoritesStatus_Response
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

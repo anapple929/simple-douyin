@@ -517,22 +517,22 @@ func file_to_relation_proto_rawDescGZIP() []byte {
 
 var file_to_relation_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_to_relation_proto_goTypes = []interface{}{
-	(*UpdateFollowingCountRequest)(nil),  // 0: services.UpdateFollowingCount_request
-	(*UpdateFollowingCountResponse)(nil), // 1: services.UpdateFollowingCount_response
-	(*UpdateFollowerCountRequest)(nil),   // 2: services.UpdateFollowerCount_request
-	(*UpdateFollowerCountResponse)(nil),  // 3: services.UpdateFollowerCount_response
-	(*GetUsersByIdsRequest)(nil),         // 4: services.GetUsersByIds_request
-	(*GetUsersByIdsResponse)(nil),        // 5: services.GetUsersByIds_response
-	(*User)(nil),                         // 6: services.User
+	(*UpdateFollowingCountRequest)(nil),  // 0: service.UpdateFollowingCount_request
+	(*UpdateFollowingCountResponse)(nil), // 1: service.UpdateFollowingCount_response
+	(*UpdateFollowerCountRequest)(nil),   // 2: service.UpdateFollowerCount_request
+	(*UpdateFollowerCountResponse)(nil),  // 3: service.UpdateFollowerCount_response
+	(*GetUsersByIdsRequest)(nil),         // 4: service.GetUsersByIds_request
+	(*GetUsersByIdsResponse)(nil),        // 5: service.GetUsersByIds_response
+	(*User)(nil),                         // 6: service.User
 }
 var file_to_relation_proto_depIdxs = []int32{
-	6, // 0: services.GetUsersByIds_response.UserList:type_name -> services.User
-	2, // 1: services.ToRelationService.UpdateFollowerCount:input_type -> services.UpdateFollowerCount_request
-	0, // 2: services.ToRelationService.UpdateFollowingCount:input_type -> services.UpdateFollowingCount_request
-	4, // 3: services.ToRelationService.GetUsersByIds:input_type -> services.GetUsersByIds_request
-	3, // 4: services.ToRelationService.UpdateFollowerCount:output_type -> services.UpdateFollowerCount_response
-	1, // 5: services.ToRelationService.UpdateFollowingCount:output_type -> services.UpdateFollowingCount_response
-	5, // 6: services.ToRelationService.GetUsersByIds:output_type -> services.GetUsersByIds_response
+	6, // 0: service.GetUsersByIds_response.UserList:type_name -> service.User
+	2, // 1: service.ToRelationService.UpdateFollowerCount:input_type -> service.UpdateFollowerCount_request
+	0, // 2: service.ToRelationService.UpdateFollowingCount:input_type -> service.UpdateFollowingCount_request
+	4, // 3: service.ToRelationService.GetUsersByIds:input_type -> service.GetUsersByIds_request
+	3, // 4: service.ToRelationService.UpdateFollowerCount:output_type -> service.UpdateFollowerCount_response
+	1, // 5: service.ToRelationService.UpdateFollowingCount:output_type -> service.UpdateFollowingCount_response
+	5, // 6: service.ToRelationService.GetUsersByIds:output_type -> service.GetUsersByIds_response
 	4, // [4:7] is the sub-list for method output_type
 	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

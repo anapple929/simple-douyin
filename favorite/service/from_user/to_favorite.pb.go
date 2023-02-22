@@ -299,16 +299,16 @@ func file_to_favorite_proto_rawDescGZIP() []byte {
 
 var file_to_favorite_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_to_favorite_proto_goTypes = []interface{}{
-	(*UpdateTotalFavoritedRequest)(nil),  // 0: services.UpdateTotalFavorited_request
-	(*UpdateTotalFavoritedResponse)(nil), // 1: services.UpdateTotalFavorited_response
-	(*UpdateFavoriteCountRequest)(nil),   // 2: services.UpdateFavoriteCount_request
-	(*UpdateFavoriteCountResponse)(nil),  // 3: services.UpdateFavoriteCount_response
+	(*UpdateTotalFavoritedRequest)(nil),  // 0: service.UpdateTotalFavorited_request
+	(*UpdateTotalFavoritedResponse)(nil), // 1: service.UpdateTotalFavorited_response
+	(*UpdateFavoriteCountRequest)(nil),   // 2: service.UpdateFavoriteCount_request
+	(*UpdateFavoriteCountResponse)(nil),  // 3: service.UpdateFavoriteCount_response
 }
 var file_to_favorite_proto_depIdxs = []int32{
-	0, // 0: services.ToFavoriteService.UpdateTotalFavorited:input_type -> services.UpdateTotalFavorited_request
-	2, // 1: services.ToFavoriteService.UpdateFavoriteCount:input_type -> services.UpdateFavoriteCount_request
-	1, // 2: services.ToFavoriteService.UpdateTotalFavorited:output_type -> services.UpdateTotalFavorited_response
-	3, // 3: services.ToFavoriteService.UpdateFavoriteCount:output_type -> services.UpdateFavoriteCount_response
+	0, // 0: service.ToFavoriteService.UpdateTotalFavorited:input_type -> service.UpdateTotalFavorited_request
+	2, // 1: service.ToFavoriteService.UpdateFavoriteCount:input_type -> service.UpdateFavoriteCount_request
+	1, // 2: service.ToFavoriteService.UpdateTotalFavorited:output_type -> service.UpdateTotalFavorited_response
+	3, // 3: service.ToFavoriteService.UpdateFavoriteCount:output_type -> service.UpdateFavoriteCount_response
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

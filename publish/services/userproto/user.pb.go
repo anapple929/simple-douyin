@@ -577,22 +577,22 @@ func file_user_proto_rawDescGZIP() []byte {
 
 var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_user_proto_goTypes = []interface{}{
-	(*DouyinUserRegisterRequest)(nil),  // 0: services.DouyinUserRegisterRequest
-	(*DouyinUserRegisterResponse)(nil), // 1: services.DouyinUserRegisterResponse
-	(*DouyinUserLoginRequest)(nil),     // 2: services.DouyinUserLoginRequest
-	(*DouyinUserLoginResponse)(nil),    // 3: services.DouyinUserLoginResponse
-	(*User)(nil),                       // 4: services.User
-	(*DouyinUserRequest)(nil),          // 5: services.DouyinUserRequest
-	(*DouyinUserResponse)(nil),         // 6: services.DouyinUserResponse
+	(*DouyinUserRegisterRequest)(nil),  // 0: service.DouyinUserRegisterRequest
+	(*DouyinUserRegisterResponse)(nil), // 1: service.DouyinUserRegisterResponse
+	(*DouyinUserLoginRequest)(nil),     // 2: service.DouyinUserLoginRequest
+	(*DouyinUserLoginResponse)(nil),    // 3: service.DouyinUserLoginResponse
+	(*User)(nil),                       // 4: service.User
+	(*DouyinUserRequest)(nil),          // 5: service.DouyinUserRequest
+	(*DouyinUserResponse)(nil),         // 6: service.DouyinUserResponse
 }
 var file_user_proto_depIdxs = []int32{
-	4, // 0: services.DouyinUserResponse.User:type_name -> services.User
-	2, // 1: services.UserService.Login:input_type -> services.DouyinUserLoginRequest
-	0, // 2: services.UserService.Register:input_type -> services.DouyinUserRegisterRequest
-	5, // 3: services.UserService.UserInfo:input_type -> services.DouyinUserRequest
-	3, // 4: services.UserService.Login:output_type -> services.DouyinUserLoginResponse
-	1, // 5: services.UserService.Register:output_type -> services.DouyinUserRegisterResponse
-	6, // 6: services.UserService.UserInfo:output_type -> services.DouyinUserResponse
+	4, // 0: service.DouyinUserResponse.User:type_name -> service.User
+	2, // 1: service.UserService.Login:input_type -> service.DouyinUserLoginRequest
+	0, // 2: service.UserService.Register:input_type -> service.DouyinUserRegisterRequest
+	5, // 3: service.UserService.UserInfo:input_type -> service.DouyinUserRequest
+	3, // 4: service.UserService.Login:output_type -> service.DouyinUserLoginResponse
+	1, // 5: service.UserService.Register:output_type -> service.DouyinUserRegisterResponse
+	6, // 6: service.UserService.UserInfo:output_type -> service.DouyinUserResponse
 	4, // [4:7] is the sub-list for method output_type
 	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
