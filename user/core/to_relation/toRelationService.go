@@ -99,6 +99,9 @@ func (ToRelationService) GetUsersByIds(ctx context.Context, req *proto.GetUsersB
 			log.Println(err)
 		}
 
+		///***********************************///
+		count = 0
+		///***********************************///
 		if count > 0 {
 			var user *model.User //一个临时变量，存解构后的user实体
 			//缓存里有

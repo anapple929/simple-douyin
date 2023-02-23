@@ -6,8 +6,12 @@ import (
 	proto "comment/service"
 	usersproto "comment/service/to_relation"
 	userproto "comment/service/userproto"
+	"comment/utils/redis"
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+
 	//"github.com/dtm-labs/client/dtmgrpc"
 	//"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"time"
@@ -100,6 +104,16 @@ func (*CommentService) CommentAction(ctx context.Context, in *proto.DouyinCommen
 		out.StatusCode = -1
 		out.StatusMsg = "actionType有问题"
 		return nil
+	}
+	//评论状态改变，删除缓存
+	key := strconv.FormatInt(in.VideoId, 10)
+	countRedis, err := redis.RdbVideoId.Exists(redis.Ctx, key).Result()
+	if err != nil {
+		log.Println(err)
+	}
+	if countRedis > 0 {
+		fmt.Println("删除了video key存的缓存")
+		redis.RdbVideoId.Del(redis.Ctx, key)
 	}
 
 	return nil

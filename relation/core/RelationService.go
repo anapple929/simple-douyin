@@ -84,7 +84,7 @@ func (*RelationService) FollowList(ctx context.Context, in *proto.DouyinRelation
 		out.StatusMsg = "登录失效，请重新登录"
 		return nil
 	}
-	userId, err := rpc_server.GetIdByToken(in.Token)
+	_, err := rpc_server.GetIdByToken(in.Token)
 	if err != nil {
 		out.StatusCode = -1
 		out.StatusMsg = "登录失效，请重新登录"
@@ -95,7 +95,7 @@ func (*RelationService) FollowList(ctx context.Context, in *proto.DouyinRelation
 	//拿到userIds集合，调用usersinfo方法，查一批User实体
 	var userIds []int64
 	//调用数据库方法
-	userIds = model.NewRelationDaoInstance().QueryFollowingIds(userId)
+	userIds = model.NewRelationDaoInstance().QueryFollowingIds(in.UserId)
 
 	//调用usersinfo方法，查一批User实体
 	users, _ := rpc_server.GetUsersInfo(userIds, in.Token)

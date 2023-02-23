@@ -8,9 +8,20 @@
 
 **项目答辩文档：** https://dzs47lqpfu.feishu.cn/docx/Q48XdJaBxosEwSxCtWNc2pCLnQc
 
-**线上演示视频：**
+**线上演示视频：** https://www.bilibili.com/video/BV16D4y1G7Ca/?vd_source=140298c09a850b3c5413933606102807
+
+**项目地址：** 43.138.51.56:4000
 
 ---
+### 运行
+1. `git clone https://github.com/anapple929/simple-douyin`
+2. 进入每个微服务`go mod tidy`，
+3. 将 `etcd` 运行起来
+4. 运行每个微服务的`main.go`
+5. `postman`或前端项目测试，网关端口：`4000`
+
+---
+### 微服务
 
 |   微服务    | 对网关暴露的接口                               | 为其他微服务提供的接口 |
 |:--------:|:---------------------------------------|:------------|
@@ -22,13 +33,6 @@
 | **relation** | 关注<br/>取消关注<br/>关注列表<br/>粉丝列表<br/>好友列表 |  根据 用户id 和 用户id 判断是否有关注关系<br/>根据 用户id1 用户id2 关注关系 构成的结构体，批量查询关注关系           |
 | **message**  | 聊天记录<br/>发消息                           | 根据用户id1和用户id2，查找二人聊天最新一条消息实体            |
 
----
-### 运行
-1. `git clone https://github.com/anapple929/simple-douyin`
-2. 进入每个微服务`go mod tidy`，
-3. 将 `etcd` 运行起来
-4. 运行每个微服务的`main.go`
-5. `postman`或前端项目测试，网关端口：`4000`
 
 ---
 ### mysql
